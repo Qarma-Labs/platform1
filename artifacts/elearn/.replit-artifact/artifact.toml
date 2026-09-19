@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Elearn Academy"
+description = "A Tanzania-focused learning platform for practical workshops and AI courses, with a welcoming public catalog and clear paths into learning."
+version = "1.0.0"
+id = "artifacts/elearn"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 26166
+
+[services.development]
+run = "pnpm --filter @workspace/elearn run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/elearn", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/elearn/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "26166"
+BASE_PATH = "/"
