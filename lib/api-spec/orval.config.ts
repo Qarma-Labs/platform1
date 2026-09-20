@@ -30,6 +30,11 @@ export default defineConfig({
       clean: true,
       prettier: true,
       override: {
+        query: {
+          // api-client-react declares @tanstack/react-query v5; orval cannot
+          // resolve it through the workspace root, so pin explicitly.
+          version: 5,
+        },
         fetch: {
           includeHttpResponseReturnType: false,
         },
