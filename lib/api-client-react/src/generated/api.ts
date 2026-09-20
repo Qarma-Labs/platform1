@@ -71,7 +71,7 @@ export const getGetHealthUrl = () => {
 
 
 
-  return `/api/health`
+  return `/health`
 }
 
 export const getHealth = async ( options?: Parameters<typeof customFetch>[1]): Promise<void> => {
@@ -91,7 +91,7 @@ export const getHealth = async ( options?: Parameters<typeof customFetch>[1]): P
 
 export const getGetHealthQueryKey = () => {
     return [
-    `/api/health`
+    `/health`
     ] as const;
     }
 
@@ -166,7 +166,7 @@ export const getRegisterUrl = () => {
 
 
 
-  return `/api/api/v1/auth/register`
+  return `/api/v1/auth/register`
 }
 
 export const register = async (registerRequest: RegisterRequest, options?: Parameters<typeof customFetch>[1]): Promise<RegistrationResponse> => {
@@ -248,7 +248,7 @@ export const getLoginUrl = () => {
 
 
 
-  return `/api/api/v1/auth/login`
+  return `/api/v1/auth/login`
 }
 
 export const login = async (loginRequest: LoginRequest, options?: Parameters<typeof customFetch>[1]): Promise<TokenResponse> => {
@@ -330,7 +330,7 @@ export const getRefreshSessionUrl = () => {
 
 
 
-  return `/api/api/v1/auth/refresh`
+  return `/api/v1/auth/refresh`
 }
 
 export const refreshSession = async ( options?: Parameters<typeof customFetch>[1]): Promise<TokenResponse> => {
@@ -398,7 +398,7 @@ export const getLogoutUrl = () => {
 
 
 
-  return `/api/api/v1/auth/logout`
+  return `/api/v1/auth/logout`
 }
 
 export const logout = async ( options?: Parameters<typeof customFetch>[1]): Promise<void> => {
@@ -466,7 +466,7 @@ export const getGetMeUrl = () => {
 
 
 
-  return `/api/api/v1/auth/me`
+  return `/api/v1/auth/me`
 }
 
 export const getMe = async ( options?: Parameters<typeof customFetch>[1]): Promise<MeResponse> => {
@@ -486,7 +486,7 @@ export const getMe = async ( options?: Parameters<typeof customFetch>[1]): Promi
 
 export const getGetMeQueryKey = () => {
     return [
-    `/api/api/v1/auth/me`
+    `/api/v1/auth/me`
     ] as const;
     }
 
@@ -561,7 +561,7 @@ export const getForgotPasswordUrl = () => {
 
 
 
-  return `/api/api/v1/auth/forgot-password`
+  return `/api/v1/auth/forgot-password`
 }
 
 export const forgotPassword = async ( options?: Parameters<typeof customFetch>[1]): Promise<void> => {
@@ -636,7 +636,7 @@ export const getGetApiV1CoursesUrl = (params: GetApiV1CoursesParams,) => {
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/api/v1/courses?${stringifiedParams}` : `/api/api/v1/courses`
+  return stringifiedParams.length > 0 ? `/api/v1/courses?${stringifiedParams}` : `/api/v1/courses`
 }
 
 export const getApiV1Courses = async (params: GetApiV1CoursesParams, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
@@ -656,7 +656,7 @@ export const getApiV1Courses = async (params: GetApiV1CoursesParams, options?: P
 
 export const getGetApiV1CoursesQueryKey = (params?: GetApiV1CoursesParams,) => {
     return [
-    `/api/api/v1/courses`, ...(params ? [params] : [])
+    `/api/v1/courses`, ...(params ? [params] : [])
     ] as const;
     }
 
@@ -731,7 +731,7 @@ export const getGetApiV1CoursesSlugUrl = (slug: string,) => {
 
 
 
-  return `/api/api/v1/courses/${slug}`
+  return `/api/v1/courses/${slug}`
 }
 
 export const getApiV1CoursesSlug = async (slug: string, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
@@ -751,7 +751,7 @@ export const getApiV1CoursesSlug = async (slug: string, options?: Parameters<typ
 
 export const getGetApiV1CoursesSlugQueryKey = (slug: string,) => {
     return [
-    `/api/api/v1/courses/${slug}`
+    `/api/v1/courses/${slug}`
     ] as const;
     }
 
@@ -826,7 +826,7 @@ export const getGetApiV1CategoriesUrl = () => {
 
 
 
-  return `/api/api/v1/categories`
+  return `/api/v1/categories`
 }
 
 export const getApiV1Categories = async ( options?: Parameters<typeof customFetch>[1]): Promise<void> => {
@@ -846,7 +846,7 @@ export const getApiV1Categories = async ( options?: Parameters<typeof customFetc
 
 export const getGetApiV1CategoriesQueryKey = () => {
     return [
-    `/api/api/v1/categories`
+    `/api/v1/categories`
     ] as const;
     }
 
@@ -921,7 +921,7 @@ export const getPostApiV1InstructorCoursesUrl = () => {
 
 
 
-  return `/api/api/v1/instructor/courses`
+  return `/api/v1/instructor/courses`
 }
 
 export const postApiV1InstructorCourses = async (createCourseRequest: CreateCourseRequest, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
@@ -1003,7 +1003,7 @@ export const getPostApiV1CheckoutUrl = () => {
 
 
 
-  return `/api/api/v1/checkout`
+  return `/api/v1/checkout`
 }
 
 export const postApiV1Checkout = async (checkoutRequest: CheckoutRequest, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
@@ -1085,7 +1085,7 @@ export const getGetApiV1OrdersIdUrl = (id: string,) => {
 
 
 
-  return `/api/api/v1/orders/${id}`
+  return `/api/v1/orders/${id}`
 }
 
 export const getApiV1OrdersId = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
@@ -1105,7 +1105,7 @@ export const getApiV1OrdersId = async (id: string, options?: Parameters<typeof c
 
 export const getGetApiV1OrdersIdQueryKey = (id: string,) => {
     return [
-    `/api/api/v1/orders/${id}`
+    `/api/v1/orders/${id}`
     ] as const;
     }
 
@@ -1187,7 +1187,7 @@ export const getPostApiV1CouponsValidateUrl = (params: PostApiV1CouponsValidateP
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/api/v1/coupons/validate?${stringifiedParams}` : `/api/api/v1/coupons/validate`
+  return stringifiedParams.length > 0 ? `/api/v1/coupons/validate?${stringifiedParams}` : `/api/v1/coupons/validate`
 }
 
 export const postApiV1CouponsValidate = async (params: PostApiV1CouponsValidateParams, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
@@ -1255,7 +1255,7 @@ export const getPostApiV1WebhooksPaymentsProviderUrl = (provider: string,) => {
 
 
 
-  return `/api/api/v1/webhooks/payments/${provider}`
+  return `/api/v1/webhooks/payments/${provider}`
 }
 
 export const postApiV1WebhooksPaymentsProvider = async (provider: string,
@@ -1338,7 +1338,7 @@ export const getPostApiV1SessionsIdReserveUrl = (id: string,) => {
 
 
 
-  return `/api/api/v1/sessions/${id}/reserve`
+  return `/api/v1/sessions/${id}/reserve`
 }
 
 export const postApiV1SessionsIdReserve = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
@@ -1406,7 +1406,7 @@ export const getDeleteApiV1SessionsIdReserveUrl = (id: string,) => {
 
 
 
-  return `/api/api/v1/sessions/${id}/reserve`
+  return `/api/v1/sessions/${id}/reserve`
 }
 
 export const deleteApiV1SessionsIdReserve = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
@@ -1474,7 +1474,7 @@ export const getGetApiV1MeEnrollmentsUrl = () => {
 
 
 
-  return `/api/api/v1/me/enrollments`
+  return `/api/v1/me/enrollments`
 }
 
 export const getApiV1MeEnrollments = async ( options?: Parameters<typeof customFetch>[1]): Promise<void> => {
@@ -1494,7 +1494,7 @@ export const getApiV1MeEnrollments = async ( options?: Parameters<typeof customF
 
 export const getGetApiV1MeEnrollmentsQueryKey = () => {
     return [
-    `/api/api/v1/me/enrollments`
+    `/api/v1/me/enrollments`
     ] as const;
     }
 
@@ -1569,7 +1569,7 @@ export const getPostApiV1LessonsIdCompleteUrl = (id: string,) => {
 
 
 
-  return `/api/api/v1/lessons/${id}/complete`
+  return `/api/v1/lessons/${id}/complete`
 }
 
 export const postApiV1LessonsIdComplete = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
@@ -1637,7 +1637,7 @@ export const getGetApiV1VerifyCodeUrl = (code: string,) => {
 
 
 
-  return `/api/api/v1/verify/${code}`
+  return `/api/v1/verify/${code}`
 }
 
 export const getApiV1VerifyCode = async (code: string, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
@@ -1657,7 +1657,7 @@ export const getApiV1VerifyCode = async (code: string, options?: Parameters<type
 
 export const getGetApiV1VerifyCodeQueryKey = (code: string,) => {
     return [
-    `/api/api/v1/verify/${code}`
+    `/api/v1/verify/${code}`
     ] as const;
     }
 
@@ -1732,7 +1732,7 @@ export const getPostApiV1CoursesIdReviewsUrl = (id: string,) => {
 
 
 
-  return `/api/api/v1/courses/${id}/reviews`
+  return `/api/v1/courses/${id}/reviews`
 }
 
 export const postApiV1CoursesIdReviews = async (id: string,
@@ -1822,7 +1822,7 @@ export const getGetApiV1AdminCoursesUrl = (params?: GetApiV1AdminCoursesParams,)
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `/api/api/v1/admin/courses?${stringifiedParams}` : `/api/api/v1/admin/courses`
+  return stringifiedParams.length > 0 ? `/api/v1/admin/courses?${stringifiedParams}` : `/api/v1/admin/courses`
 }
 
 export const getApiV1AdminCourses = async (params?: GetApiV1AdminCoursesParams, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
@@ -1842,7 +1842,7 @@ export const getApiV1AdminCourses = async (params?: GetApiV1AdminCoursesParams, 
 
 export const getGetApiV1AdminCoursesQueryKey = (params?: GetApiV1AdminCoursesParams,) => {
     return [
-    `/api/api/v1/admin/courses`, ...(params ? [params] : [])
+    `/api/v1/admin/courses`, ...(params ? [params] : [])
     ] as const;
     }
 

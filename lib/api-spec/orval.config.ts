@@ -26,7 +26,9 @@ export default defineConfig({
       target: "generated",
       client: "react-query",
       mode: "split",
-      baseUrl: "/api",
+      // Paths in openapi.yaml are already absolute (e.g. /api/v1/auth/login),
+      // so no baseUrl prefix must be added here. The host (scheme+domain+port)
+      // is set at runtime via setBaseUrl().
       clean: true,
       prettier: true,
       override: {

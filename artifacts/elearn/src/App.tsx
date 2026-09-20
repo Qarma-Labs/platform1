@@ -1,4 +1,4 @@
-import { type FormEvent, type ReactNode, useMemo, useState } from 'react';
+import { type FormEvent, type ReactNode, useEffect, useMemo, useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import {
   ArrowRight,
@@ -17,6 +17,8 @@ import {
 } from 'lucide-react';
 import { Link, Route, Switch, useLocation, useParams, Router as WouterRouter } from 'wouter';
 import { ErrorBoundary } from '@/components/error-boundary';
+import { AuthProvider, useAuth } from '@/hooks/use-auth';
+import { toApiErrorInfo } from '@/lib/auth-session';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import NotFound from '@/pages/not-found';
@@ -167,8 +169,10 @@ function Toast({ message, onClose }: { message: string; onClose: () => void }) {
 }
 
 function Header() {
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   const [open, setOpen] = useState(false);
+  const { status, user, logout } = useAuth();
+  const onLogout = async () => { await logout(); setLocation('/'); };
   const isActive = (path: string) => location === path || (path === '/courses' && location.startsWith('/courses/'));
   return (
     <header className="site-header">
@@ -182,8 +186,13 @@ function Header() {
           <a href="#about" className="nav-link" data-testid="link-about">About Elearn</a>
         </nav>
         <div className="nav-actions">
-          <Link href="/login" className="button button-ghost button-small" data-testid="link-login">Log in</Link>
-          <Link href="/register" className="button button-primary button-small" data-testid="link-register">Join Elearn</Link>
+          {status === 'authed' && user ? <>
+            <span className="nav-user" data-testid="text-nav-user">{user.fullName}</span>
+            <button className="button button-ghost button-small" onClick={onLogout} data-testid="button-logout">Log out</button>
+          </> : <>
+            <Link href="/login" className="button button-ghost button-small" data-testid="link-login">Log in</Link>
+            <Link href="/register" className="button button-primary button-small" data-testid="link-register">Join Elearn</Link>
+          </>}
         </div>
         <div className="mobile-nav">
           <Link href="/register" className="button button-primary button-small" data-testid="link-mobile-register">Join</Link>
@@ -326,11 +335,53 @@ function CourseDetail() {
 
 function AuthPage({ mode }: { mode: 'login' | 'register' }) {
   const [, setLocation] = useLocation();
-  const [submitted, setSubmitted] = useState(false);
+  const { status, login, register } = useAuth();
   const [form, setForm] = useState({ name: '', email: '', password: '' });
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
+  const [formError, setFormError] = useState('');
+  const [pending, setPending] = useState(false);
   const isRegister = mode === 'register';
-  const submit = (event: FormEvent) => { event.preventDefault(); setSubmitted(true); };
-  return <div className="auth-page"><aside className="auth-aside"><Link href="/" className="brand auth-mark" data-testid="link-auth-brand"><span className="brand-mark">e</span><span>Elearn<span style={{ color: 'hsl(44 91% 62%)' }}>.</span></span></Link><div className="auth-aside-content"><p className="eyebrow" style={{ color: 'hsl(44 91% 62%)' }}>A little progress, often</p><h1 className="display">{isRegister ? 'Your next chapter starts here.' : 'Good to see you again.'}</h1><p>{isRegister ? 'Join a growing community of Tanzanian learners making useful things happen, one skill at a time.' : 'Pick up where you left off. Your next useful lesson is waiting.'}</p></div></aside><section className="auth-form-side"><div className="auth-form"><p className="eyebrow">{isRegister ? 'Create your account' : 'Welcome back'}</p><h2 className="display">{isRegister ? 'Start with one skill.' : 'Log in to Elearn.'}</h2><p className="auth-subtitle">{isRegister ? 'No pressure to know everything. Just bring your curiosity.' : 'Keep your learning moving at your own pace.'}</p>{submitted && <div className="form-message" data-testid="status-auth-success">{isRegister ? 'Account created in our demo. Your first lesson is ready when you are.' : 'You are logged in for this demo. Welcome back.'}</div>}<form onSubmit={submit}>{isRegister && <div className="field"><label htmlFor="name">Your name</label><input id="name" value={form.name} onChange={event => setForm({ ...form, name: event.target.value })} placeholder="e.g. Asha M." required data-testid="input-name" /></div>}<div className="field"><label htmlFor="email">Email address</label><input id="email" type="email" value={form.email} onChange={event => setForm({ ...form, email: event.target.value })} placeholder="you@example.com" required data-testid="input-email" /></div><div className="field"><label htmlFor="password">Password</label><input id="password" type="password" value={form.password} onChange={event => setForm({ ...form, password: event.target.value })} placeholder="At least 8 characters" minLength={8} required data-testid="input-password" /></div>{isRegister && <label className="checkbox-row"><input type="checkbox" required data-testid="input-terms" /> <span>I agree to learn at my own pace and make something useful with it.</span></label>}<button className="button button-primary auth-submit" type="submit" data-testid={`button-submit-${mode}`}>{isRegister ? 'Create my account' : 'Log in'} <ArrowRight size={16} /></button></form><p className="auth-switch">{isRegister ? 'Already have an account?' : 'New to Elearn?'} <Link href={isRegister ? '/login' : '/register'} data-testid={`link-switch-${mode}`}>{isRegister ? 'Log in' : 'Create an account'}</Link></p><button className="button button-ghost button-small" style={{ marginTop: 16, width: '100%' }} onClick={() => setLocation('/courses')} data-testid="button-browse-without-account">Browse courses first</button></div></section></div>;
+  const nameError = fieldErrors.fullname?.[0] ?? fieldErrors.name?.[0];
+  const emailError = fieldErrors.email?.[0];
+  const passwordError = fieldErrors.password?.[0];
+
+  useEffect(() => {
+    if (status === 'authed') setLocation('/courses');
+  }, [status, setLocation]);
+
+  const update = (field: 'name' | 'email' | 'password', value: string) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
+    setFieldErrors((prev) => {
+      const keys = field === 'name' ? ['fullname', 'name'] : [field];
+      if (!keys.some((k) => prev[k])) return prev;
+      const next = { ...prev };
+      for (const k of keys) delete next[k];
+      return next;
+    });
+  };
+
+  const submit = async (event: FormEvent) => {
+    event.preventDefault();
+    if (pending) return;
+    setPending(true);
+    setFormError('');
+    setFieldErrors({});
+    try {
+      if (isRegister) {
+        await register({ email: form.email, phone: null, password: form.password, fullName: form.name });
+      } else {
+        await login({ identifier: form.email, password: form.password });
+      }
+      setLocation('/courses');
+    } catch (error) {
+      const info = toApiErrorInfo(error);
+      setFieldErrors(info.fields);
+      setFormError(info.message);
+    } finally {
+      setPending(false);
+    }
+  };
+  return <div className="auth-page"><aside className="auth-aside"><Link href="/" className="brand auth-mark" data-testid="link-auth-brand"><span className="brand-mark">e</span><span>Elearn<span style={{ color: 'hsl(44 91% 62%)' }}>.</span></span></Link><div className="auth-aside-content"><p className="eyebrow" style={{ color: 'hsl(44 91% 62%)' }}>A little progress, often</p><h1 className="display">{isRegister ? 'Your next chapter starts here.' : 'Good to see you again.'}</h1><p>{isRegister ? 'Join a growing community of Tanzanian learners making useful things happen, one skill at a time.' : 'Pick up where you left off. Your next useful lesson is waiting.'}</p></div></aside><section className="auth-form-side"><div className="auth-form"><p className="eyebrow">{isRegister ? 'Create your account' : 'Welcome back'}</p><h2 className="display">{isRegister ? 'Start with one skill.' : 'Log in to Elearn.'}</h2><p className="auth-subtitle">{isRegister ? 'No pressure to know everything. Just bring your curiosity.' : 'Keep your learning moving at your own pace.'}</p>{formError && <div className="form-message" data-testid="status-auth-error">{formError}</div>}<form onSubmit={submit}>{isRegister && <div className="field"><label htmlFor="name">Your name</label><input id="name" value={form.name} onChange={event => update('name', event.target.value)} placeholder="e.g. Asha M." required data-testid="input-name" />{nameError && <p className="field-error" data-testid="error-name">{nameError}</p>}</div>}<div className="field"><label htmlFor="email">Email address</label><input id="email" type="email" value={form.email} onChange={event => update('email', event.target.value)} placeholder="you@example.com" required data-testid="input-email" />{emailError && <p className="field-error" data-testid="error-email">{emailError}</p>}</div><div className="field"><label htmlFor="password">Password</label><input id="password" type="password" value={form.password} onChange={event => update('password', event.target.value)} placeholder="At least 8 characters" minLength={8} required data-testid="input-password" />{passwordError && <p className="field-error" data-testid="error-password">{passwordError}</p>}</div>{isRegister && <label className="checkbox-row"><input type="checkbox" required data-testid="input-terms" /> <span>I agree to learn at my own pace and make something useful with it.</span></label>}<button className="button button-primary auth-submit" type="submit" disabled={pending} data-testid={`button-submit-${mode}`}>{pending ? (isRegister ? 'Creating your account…' : 'Logging in…') : <>{isRegister ? 'Create my account' : 'Log in'} <ArrowRight size={16} /></>}</button></form><p className="auth-switch">{isRegister ? 'Already have an account?' : 'New to Elearn?'} <Link href={isRegister ? '/login' : '/register'} data-testid={`link-switch-${mode}`}>{isRegister ? 'Log in' : 'Create an account'}</Link></p><button className="button button-ghost button-small" style={{ marginTop: 16, width: '100%' }} onClick={() => setLocation('/courses')} data-testid="button-browse-without-account">Browse courses first</button></div></section></div>;
 }
 
 function RoutedErrorBoundary({ children }: { children: ReactNode }) {
@@ -345,7 +396,7 @@ function Router() {
 }
 
 function App() {
-  return <QueryClientProvider client={queryClient}><TooltipProvider><WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}><Router /></WouterRouter><Toaster /></TooltipProvider></QueryClientProvider>;
+  return <QueryClientProvider client={queryClient}><AuthProvider><TooltipProvider><WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, '')}><Router /></WouterRouter><Toaster /></TooltipProvider></AuthProvider></QueryClientProvider>;
 }
 
 export default App;

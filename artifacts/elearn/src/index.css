@@ -262,6 +262,8 @@ a { color: inherit; text-decoration: none; }
 .auth-switch { margin-top: 27px; color: hsl(var(--muted-foreground)); text-align: center; font-size: 13px; }
 .auth-switch a { color: hsl(var(--primary)); font-weight: 700; }
 .form-message { padding: 11px 13px; margin-bottom: 17px; border: 1px solid hsl(var(--primary) / .25); border-radius: 5px; background: hsl(var(--primary) / .08); color: hsl(var(--primary)); font-size: 12px; line-height: 1.4; }
+.field-error { margin: 6px 0 0; color: hsl(0 72% 45%); font-size: 12px; line-height: 1.4; }
+.nav-user { font-size: 13px; font-weight: 700; }
 .checkbox-row { display: flex; align-items: start; gap: 8px; color: hsl(var(--muted-foreground)); font-size: 12px; line-height: 1.4; }
 
 .toast {
