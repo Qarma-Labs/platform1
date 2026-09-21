@@ -30,6 +30,16 @@ export interface CheckoutRequest {
   returnUrl: string | null;
 }
 
+export interface CheckoutResult {
+  orderId: string;
+  number: string;
+  status: string;
+  total: number;
+  currency: string;
+  paymentInstruction: string;
+  pollAfterMs: number;
+}
+
 export interface LessonOutline {
   id: string;
   title: string;
@@ -107,6 +117,24 @@ export interface CreateCourseRequest {
   level: string;
   price: number;
   currency: string;
+}
+
+export interface Enrollment {
+  userId?: string;
+  courseId?: string;
+  /** @nullable */
+  orderId?: string | null;
+  source?: string;
+  status?: string;
+  /** @nullable */
+  expiresAt?: string | null;
+  /** @nullable */
+  completedAt?: string | null;
+  /** @nullable */
+  certificateId?: string | null;
+  id?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface LoginRequest {
@@ -212,6 +240,10 @@ export interface TokenResponse {
   tokens: TokenPair;
 }
 
+export interface ValidateCouponResult {
+  discount: number;
+}
+
 export type ListCoursesParams = {
 q?: string;
 category?: string;
@@ -229,7 +261,7 @@ cursor?: string;
 limit?: number;
 };
 
-export type PostApiV1CouponsValidateParams = {
+export type ValidateCouponParams = {
 code: string;
 subtotal: number;
 userId: string;

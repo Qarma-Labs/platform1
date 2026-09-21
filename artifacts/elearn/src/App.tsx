@@ -17,198 +17,24 @@ import {
 } from 'lucide-react';
 import { Link, Route, Switch, useLocation, useParams, Router as WouterRouter } from 'wouter';
 import { ErrorBoundary } from '@/components/error-boundary';
+import { Footer, Header } from '@/components/site-chrome';
 import { AuthProvider, useAuth } from '@/hooks/use-auth';
 import { toApiErrorInfo } from '@/lib/auth-session';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import NotFound from '@/pages/not-found';
+import CheckoutPage from '@/pages/checkout';
+import LearningPage from '@/pages/learning';
 import { useCourseDetail, useCourses } from '@/hooks/use-catalog';
+import { useMyEnrollments } from '@/hooks/use-learning';
 import type { Course, CourseType } from '@/lib/catalog';
-
-const courses: Course[] = [
-  {
-    slug: 'sell-on-instagram',
-    title: 'Sell on Instagram',
-    type: 'workshop',
-    description: 'Turn your everyday product into a clear, confident Instagram offer people can act on.',
-    instructor: 'Neema Mushi',
-    instructorRole: 'Digital commerce coach',
-    duration: '3h 20m',
-    level: 'Starter',
-    price: 45000,
-    rating: 4.9,
-    students: 284,
-    image: 'coral',
-    mark: '01',
-    sections: [
-      { title: 'Make your offer clear', lessons: [{ title: 'What are you really selling?', duration: '18 min', freePreview: true }, { title: 'Your simple product promise', duration: '24 min', freePreview: false }] },
-      { title: 'Build a page that sells', lessons: [{ title: 'Profile, bio and highlights', duration: '31 min', freePreview: true }, { title: 'A week of posts in one sitting', duration: '42 min', freePreview: false }] },
-      { title: 'Turn attention into action', lessons: [{ title: 'DM conversations that convert', duration: '36 min', freePreview: false }, { title: 'Your first 10-day plan', duration: '29 min', freePreview: false }] },
-    ],
-  },
-  {
-    slug: 'ai-for-real-work',
-    title: 'AI for Real Work',
-    type: 'ai',
-    description: 'A practical first course in using AI to write, plan and think faster without losing your voice.',
-    instructor: 'Baraka Sanga',
-    instructorRole: 'Product builder and AI educator',
-    duration: '4h 10m',
-    level: 'Starter',
-    price: 60000,
-    rating: 4.8,
-    students: 417,
-    image: 'teal',
-    mark: 'AI',
-    sections: [
-      { title: 'A useful mental model', lessons: [{ title: 'AI without the hype', duration: '16 min', freePreview: true }, { title: 'The prompt that gets you moving', duration: '28 min', freePreview: true }] },
-      { title: 'Build your working toolkit', lessons: [{ title: 'Research and summarise in minutes', duration: '36 min', freePreview: false }, { title: 'Write a better first draft', duration: '31 min', freePreview: false }] },
-      { title: 'Make it part of your week', lessons: [{ title: 'A repeatable AI workflow', duration: '41 min', freePreview: false }, { title: 'Your practical next experiment', duration: '25 min', freePreview: false }] },
-    ],
-  },
-  {
-    slug: 'phone-photography',
-    title: 'Phone Photography',
-    type: 'workshop',
-    description: 'See better light, frame with intention and make images that give your small brand a point of view.',
-    instructor: 'Amani Joseph',
-    instructorRole: 'Photographer and visual storyteller',
-    duration: '2h 45m',
-    level: 'Starter',
-    price: 35000,
-    rating: 4.7,
-    students: 193,
-    image: 'gold',
-    mark: '02',
-    sections: [
-      { title: 'See the light', lessons: [{ title: 'The window light test', duration: '22 min', freePreview: true }, { title: 'Colour, shade and mood', duration: '29 min', freePreview: false }] },
-      { title: 'Frame the story', lessons: [{ title: 'Three reliable compositions', duration: '34 min', freePreview: false }, { title: 'Photographing people with ease', duration: '38 min', freePreview: false }] },
-    ],
-  },
-  {
-    slug: 'design-with-canva',
-    title: 'Design with Canva',
-    type: 'workshop',
-    description: 'Make clean, memorable flyers and social posts from a blank canvas — no design degree required.',
-    instructor: 'Rehema Kweka',
-    instructorRole: 'Brand designer',
-    duration: '3h 05m',
-    level: 'Starter',
-    price: 40000,
-    rating: 4.8,
-    students: 328,
-    image: 'ink',
-    mark: '03',
-    sections: [
-      { title: 'The visual basics', lessons: [{ title: 'Good design in plain language', duration: '25 min', freePreview: true }, { title: 'Type and colour that work', duration: '32 min', freePreview: false }] },
-      { title: 'Your first design system', lessons: [{ title: 'Build a reusable template', duration: '39 min', freePreview: false }, { title: 'Create a campaign set', duration: '45 min', freePreview: false }] },
-    ],
-  },
-  {
-    slug: 'no-code-website-weekend',
-    title: 'Your First Website',
-    type: 'workshop',
-    description: 'Go from idea to a polished, shareable website over one focused weekend.',
-    instructor: 'Jabali Omari',
-    instructorRole: 'No-code maker',
-    duration: '5h 15m',
-    level: 'Intermediate',
-    price: 75000,
-    rating: 4.9,
-    students: 146,
-    image: 'code',
-    mark: '04',
-    sections: [
-      { title: 'Plan before you build', lessons: [{ title: 'A page people understand', duration: '21 min', freePreview: true }, { title: 'Content that does the job', duration: '35 min', freePreview: false }] },
-      { title: 'Build and launch', lessons: [{ title: 'Your first responsive page', duration: '62 min', freePreview: false }, { title: 'Polish, test and publish', duration: '48 min', freePreview: false }] },
-    ],
-  },
-  {
-    slug: 'ai-for-content-creators',
-    title: 'AI for Content Creators',
-    type: 'ai',
-    description: 'Find your ideas faster, develop a voice and create a month of useful content with a lighter lift.',
-    instructor: 'Baraka Sanga',
-    instructorRole: 'Product builder and AI educator',
-    duration: '3h 50m',
-    level: 'Intermediate',
-    price: 65000,
-    rating: 4.8,
-    students: 231,
-    image: 'teal',
-    mark: 'AI',
-    sections: [
-      { title: 'Start with your point of view', lessons: [{ title: 'The content compass', duration: '23 min', freePreview: true }, { title: 'Prompting in your own voice', duration: '34 min', freePreview: false }] },
-      { title: 'Plan a month in an hour', lessons: [{ title: 'From raw idea to useful post', duration: '39 min', freePreview: false }, { title: 'Edit like a human', duration: '31 min', freePreview: false }] },
-    ],
-  },
-];
-
-const money = (value: number) => `TZS ${value.toLocaleString('en-TZ')}`;
+import { mockCourses } from '@/lib/mock-catalog';
+import { money } from '@/lib/catalog';
 
 function Toast({ message, onClose }: { message: string; onClose: () => void }) {
   return <div className="toast" data-testid="status-toast" onClick={onClose}>{message}</div>;
 }
 
-function Header() {
-  const [location, setLocation] = useLocation();
-  const [open, setOpen] = useState(false);
-  const { status, user, logout } = useAuth();
-  const onLogout = async () => { await logout(); setLocation('/'); };
-  const isActive = (path: string) => location === path || (path === '/courses' && location.startsWith('/courses/'));
-  return (
-    <header className="site-header">
-      <div className="container-wide nav-row">
-        <Link href="/" className="brand" data-testid="link-brand">
-          <span className="brand-mark">e</span><span>Elearn<span style={{ color: 'hsl(14 78% 64%)' }}>.</span></span>
-        </Link>
-        <nav className="nav-links" aria-label="Primary navigation">
-          <Link href="/courses" className={`nav-link ${isActive('/courses') ? 'active' : ''}`} data-testid="link-courses">Explore courses</Link>
-          <a href="#how-it-works" className="nav-link" data-testid="link-how-it-works">How it works</a>
-          <a href="#about" className="nav-link" data-testid="link-about">About Elearn</a>
-        </nav>
-        <div className="nav-actions">
-          {status === 'authed' && user ? <>
-            <span className="nav-user" data-testid="text-nav-user">{user.fullName}</span>
-            <button className="button button-ghost button-small" onClick={onLogout} data-testid="button-logout">Log out</button>
-          </> : <>
-            <Link href="/login" className="button button-ghost button-small" data-testid="link-login">Log in</Link>
-            <Link href="/register" className="button button-primary button-small" data-testid="link-register">Join Elearn</Link>
-          </>}
-        </div>
-        <div className="mobile-nav">
-          <Link href="/register" className="button button-primary button-small" data-testid="link-mobile-register">Join</Link>
-          <button className="button button-ghost button-small" onClick={() => setOpen(!open)} aria-label="Toggle navigation" data-testid="button-toggle-navigation">
-            {open ? <X size={17} /> : <Menu size={17} />}
-          </button>
-        </div>
-      </div>
-      {open && <div style={{ position: 'absolute', top: '68px', left: 0, right: 0, padding: '18px 16px', background: 'hsl(43 42% 98%)', borderBottom: '1px solid hsl(42 22% 81%)' }}>
-        <div style={{ display: 'grid', gap: 15 }}>
-          <Link href="/courses" className="nav-link" onClick={() => setOpen(false)} data-testid="link-mobile-courses">Explore courses</Link>
-          {status === 'authed' && user ? <button className="nav-link" onClick={async () => { await logout(); setOpen(false); setLocation('/'); }} data-testid="button-mobile-logout">Log out ({user.fullName})</button> : <Link href="/login" className="nav-link" onClick={() => setOpen(false)} data-testid="link-mobile-login">Log in</Link>}
-        </div>
-      </div>}
-    </header>
-  );
-}
-
-function Footer() {
-  return <footer className="site-footer" id="about">
-    <div className="container-wide">
-      <div className="footer-grid">
-        <div>
-          <Link href="/" className="brand" data-testid="link-footer-brand"><span className="brand-mark">e</span><span>Elearn<span style={{ color: 'hsl(44 91% 62%)' }}>.</span></span></Link>
-          <p className="footer-brand-copy">Practical learning for the work you want to do next. Built with and for ambitious learners in Tanzania.</p>
-        </div>
-        <div><p className="footer-title">Learn</p><Link href="/courses" className="footer-link" data-testid="link-footer-courses">All courses</Link><Link href="/courses?type=workshop" className="footer-link" data-testid="link-footer-workshops">Workshops</Link><Link href="/courses?type=ai" className="footer-link" data-testid="link-footer-ai">AI courses</Link></div>
-        <div><p className="footer-title">Elearn</p><a href="#how-it-works" className="footer-link" data-testid="link-footer-how">How it works</a><a href="#about" className="footer-link" data-testid="link-footer-story">Our story</a><Link href="/register" className="footer-link" data-testid="link-footer-join">Join the community</Link></div>
-        <div><p className="footer-title">Say hello</p><a href="mailto:hello@elearn.academy" className="footer-link" data-testid="link-footer-email">hello@elearn.academy</a><p className="footer-brand-copy" style={{ marginTop: 19 }}>Dar es Salaam, Tanzania<br />Made for useful progress.</p></div>
-      </div>
-      <div className="footer-bottom"><span>© 2025 Elearn Academy</span><span>Learn something. Make something.</span></div>
-    </div>
-  </footer>;
-}
 
 function CourseArt({ course, detail = false }: { course: Course; detail?: boolean }) {
   if (detail) return <div className={`detail-art art-${course.image}`}><span className="course-type">{course.type === 'ai' ? 'AI COURSE' : 'WORKSHOP'}</span><span className="art-mark">{course.mark}</span><span className="art-bottom">{course.title}</span></div>;
@@ -230,7 +56,7 @@ function Home() {
   const [, setLocation] = useLocation();
   const { status } = useAuth();
   const [toast, setToast] = useState('');
-  const { courses: catalog } = useCourses({ limit: 3 }, courses);
+  const { courses: catalog } = useCourses({ limit: 3 }, mockCourses);
   const featured = catalog.slice(0, 3);
   const showToast = (message: string) => { setToast(message); window.setTimeout(() => setToast(''), 3300); };
   return <div className="app-shell">
@@ -302,7 +128,7 @@ function Courses() {
     q: search || undefined,
     category: effectiveFilter === 'all' ? undefined : effectiveFilter === 'workshop' ? 'workshops' : 'ai-courses',
     limit: 24,
-  }, courses);
+  }, mockCourses);
   const shownCourses = useMemo(() => {
     // The API already filters by search/category; the client filter only
     // applies to the mock fallback (which also searches descriptions).
@@ -321,17 +147,23 @@ function CourseDetail() {
   const [, setLocation] = useLocation();
   const { status } = useAuth();
   const [toast, setToast] = useState('');
-  const { course } = useCourseDetail(slug, courses.find(item => item.slug === slug));
+  const { course } = useCourseDetail(slug, mockCourses.find(item => item.slug === slug));
+  const { enrolledCourseIds } = useMyEnrollments();
   if (!course) return <NotFound />;
   const totalLessons = course.sections.reduce((total, section) => total + section.lessons.length, 0);
+  const enrolled = !!course.id && enrolledCourseIds.has(course.id);
   const enroll = () => {
+    if (enrolled) {
+      setLocation('/learning');
+      return;
+    }
     if (status !== 'authed') {
       setLocation(`/register?next=${encodeURIComponent(`/courses/${course.slug}`)}`);
       return;
     }
     setLocation(`/checkout/${course.slug}`);
   };
-  return <div className="app-shell"><Header /><main><section className="detail-hero"><div className="container-wide"><Link href="/courses" className="back-link" data-testid="link-back-courses"><ArrowRight size={14} style={{ transform: 'rotate(180deg)' }} /> All courses</Link><div className="detail-layout"><div><span className="course-type">{course.type === 'ai' ? 'AI COURSE' : 'WORKSHOP'}</span><h1 className="display">{course.title}</h1><p className="detail-description">{course.description}</p></div><CourseArt course={course} detail /></div></div></section><section className="container-wide detail-main"><div><h2 className="display detail-section-title">Inside the course</h2>{course.sections.map((section, index) => <div className="outline-section" key={section.title}><div className="outline-heading"><span style={{ color: 'hsl(191 34% 17%)', fontFamily: 'var(--app-font-sans)', fontSize: 14, fontWeight: 700 }}>{String(index + 1).padStart(2, '0')} &nbsp; {section.title}</span><span>{section.lessons.length} lessons</span></div>{section.lessons.map(lesson => <div className="lesson-row" key={lesson.title}>{lesson.freePreview ? <PlayCircle size={16} /> : <BookOpen size={16} />}<span>{lesson.title}</span>{lesson.freePreview && <span className="preview-tag">Preview</span>}<span className="lesson-duration">{lesson.duration}</span></div>)}</div>)}</div><aside><div className="enroll-card"><p className="eyebrow">Start learning today</p><p className="enroll-price">{money(course.price)}</p><button className="button button-primary" onClick={enroll} data-testid="button-enroll-course">Enroll in this course <ArrowRight size={16} /></button><div className="meta-list"><div className="meta-row"><span>Course level</span><span>{course.level}</span></div><div className="meta-row"><span>Total time</span><span>{course.duration}</span></div><div className="meta-row"><span>Lessons</span><span>{totalLessons}</span></div><div className="meta-row"><span>Learners</span><span>{course.students}</span></div><div className="meta-row"><span>Rating</span><span><Star size={12} fill="currentColor" style={{ verticalAlign: 'middle', color: 'hsl(37 76% 51%)' }} /> {course.rating}</span></div></div><div className="instructor-card"><div className="avatar">{course.instructor.split(' ').map(name => name[0]).join('')}</div><div><div className="instructor-name">{course.instructor}</div><div className="instructor-role">{course.instructorRole}</div></div></div><p className="notice">You will get lifetime access to the course lessons and practical exercises.</p></div></aside></section></main><Footer />{toast && <Toast message={toast} onClose={() => { setToast(''); setLocation('/register'); }} />}</div>;
+  return <div className="app-shell"><Header /><main><section className="detail-hero"><div className="container-wide"><Link href="/courses" className="back-link" data-testid="link-back-courses"><ArrowRight size={14} style={{ transform: 'rotate(180deg)' }} /> All courses</Link><div className="detail-layout"><div><span className="course-type">{course.type === 'ai' ? 'AI COURSE' : 'WORKSHOP'}</span><h1 className="display">{course.title}</h1><p className="detail-description">{course.description}</p></div><CourseArt course={course} detail /></div></div></section><section className="container-wide detail-main"><div><h2 className="display detail-section-title">Inside the course</h2>{course.sections.map((section, index) => <div className="outline-section" key={section.title}><div className="outline-heading"><span style={{ color: 'hsl(191 34% 17%)', fontFamily: 'var(--app-font-sans)', fontSize: 14, fontWeight: 700 }}>{String(index + 1).padStart(2, '0')} &nbsp; {section.title}</span><span>{section.lessons.length} lessons</span></div>{section.lessons.map(lesson => <div className="lesson-row" key={lesson.title}>{lesson.freePreview ? <PlayCircle size={16} /> : <BookOpen size={16} />}<span>{lesson.title}</span>{lesson.freePreview && <span className="preview-tag">Preview</span>}<span className="lesson-duration">{lesson.duration}</span></div>)}</div>)}</div><aside><div className="enroll-card"><p className="eyebrow">Start learning today</p><p className="enroll-price">{money(course.price)}</p><button className="button button-primary" onClick={enroll} data-testid="button-enroll-course">{enrolled ? 'Continue learning' : 'Enroll in this course'} <ArrowRight size={16} /></button><div className="meta-list"><div className="meta-row"><span>Course level</span><span>{course.level}</span></div><div className="meta-row"><span>Total time</span><span>{course.duration}</span></div><div className="meta-row"><span>Lessons</span><span>{totalLessons}</span></div><div className="meta-row"><span>Learners</span><span>{course.students}</span></div><div className="meta-row"><span>Rating</span><span><Star size={12} fill="currentColor" style={{ verticalAlign: 'middle', color: 'hsl(37 76% 51%)' }} /> {course.rating}</span></div></div><div className="instructor-card"><div className="avatar">{course.instructor.split(' ').map(name => name[0]).join('')}</div><div><div className="instructor-name">{course.instructor}</div><div className="instructor-role">{course.instructorRole}</div></div></div><p className="notice">You will get lifetime access to the course lessons and practical exercises.</p></div></aside></section></main><Footer />{toast && <Toast message={toast} onClose={() => { setToast(''); setLocation('/register'); }} />}</div>;
 }
 
 function AuthPage({ mode }: { mode: 'login' | 'register' }) {
@@ -396,7 +228,7 @@ function RoutedErrorBoundary({ children }: { children: ReactNode }) {
 const queryClient = new QueryClient();
 
 function Router() {
-  return <RoutedErrorBoundary><Switch><Route path="/" component={Home} /><Route path="/courses" component={Courses} /><Route path="/courses/:slug" component={CourseDetail} /><Route path="/login" component={() => <AuthPage mode="login" />} /><Route path="/register" component={() => <AuthPage mode="register" />} /><Route component={NotFound} /></Switch></RoutedErrorBoundary>;
+  return <RoutedErrorBoundary><Switch><Route path="/" component={Home} /><Route path="/courses" component={Courses} /><Route path="/courses/:slug" component={CourseDetail} /><Route path="/checkout/:slug" component={CheckoutPage} /><Route path="/learning" component={LearningPage} /><Route path="/login" component={() => <AuthPage mode="login" />} /><Route path="/register" component={() => <AuthPage mode="register" />} /><Route component={NotFound} /></Switch></RoutedErrorBoundary>;
 }
 
 function App() {

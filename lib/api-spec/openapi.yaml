@@ -244,6 +244,7 @@ paths:
     post:
       tags:
         - payments
+      operationId: checkout
       requestBody:
         content:
           application/json:
@@ -253,10 +254,39 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckoutResult'
+        '400':
+          description: Bad Request
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '409':
+          description: Conflict
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
   /api/v1/orders/{id}:
     get:
       tags:
         - payments
+      operationId: getOrder
       parameters:
         - name: id
           in: path
@@ -267,10 +297,21 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckoutResult'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
   /api/v1/coupons/validate:
     post:
       tags:
         - payments
+      operationId: validateCoupon
       parameters:
         - name: code
           in: query
@@ -292,6 +333,16 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidateCouponResult'
+        '422':
+          description: Unprocessable Entity
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
   /api/v1/webhooks/payments/{provider}:
     post:
       tags:
@@ -342,9 +393,16 @@ paths:
     get:
       tags:
         - learning
+      operationId: listMyEnrollments
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Enrollment'
   /api/v1/lessons/{id}/complete:
     post:
       tags:
@@ -401,6 +459,21 @@ paths:
           in: query
           schema:
             type: string
+      responses:
+        '200':
+          description: OK
+  /api/v1/dev/payments/simulate/{orderId}:
+    post:
+      tags:
+        - dev
+      operationId: simulatePayment
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
       responses:
         '200':
           description: OK
@@ -470,6 +543,34 @@ components:
           type:
             - 'null'
             - string
+    CheckoutResult:
+      required:
+        - orderId
+        - number
+        - status
+        - total
+        - currency
+        - paymentInstruction
+        - pollAfterMs
+      type: object
+      properties:
+        orderId:
+          type: string
+          format: uuid
+        number:
+          type: string
+        status:
+          type: string
+        total:
+          type: integer
+          format: int64
+        currency:
+          type: string
+        paymentInstruction:
+          type: string
+        pollAfterMs:
+          type: integer
+          format: int32
     CourseDetail:
       required:
         - id
@@ -653,6 +754,48 @@ components:
           format: int64
         currency:
           type: string
+    Enrollment:
+      type: object
+      properties:
+        userId:
+          type: string
+          format: uuid
+        courseId:
+          type: string
+          format: uuid
+        orderId:
+          type:
+            - 'null'
+            - string
+          format: uuid
+        source:
+          type: string
+        status:
+          type: string
+        expiresAt:
+          type:
+            - 'null'
+            - string
+          format: date-time
+        completedAt:
+          type:
+            - 'null'
+            - string
+          format: date-time
+        certificateId:
+          type:
+            - 'null'
+            - string
+          format: uuid
+        id:
+          type: string
+          format: uuid
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
     LessonOutline:
       required:
         - id
@@ -922,6 +1065,14 @@ components:
       properties:
         tokens:
           $ref: '#/components/schemas/TokenPair'
+    ValidateCouponResult:
+      required:
+        - discount
+      type: object
+      properties:
+        discount:
+          type: integer
+          format: int64
 tags:
   - name: Elearn.Api
   - name: auth
@@ -929,3 +1080,4 @@ tags:
   - name: payments
   - name: workshops
   - name: learning
+  - name: dev

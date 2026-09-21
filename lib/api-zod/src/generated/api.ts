@@ -177,13 +177,13 @@ export const CreateCourseBody = zod.object({
 export const CreateCourseResponse = zod.unknown()
 
 
-export const postApiV1CheckoutBodyItemsItemQuantityDefault = 1;
+export const checkoutBodyItemsItemQuantityDefault = 1;
 
-export const PostApiV1CheckoutBody = zod.object({
+export const CheckoutBody = zod.object({
   "items": zod.array(zod.object({
   "type": zod.string(),
   "id": zod.string().uuid(),
-  "quantity": zod.number().int().default(postApiV1CheckoutBodyItemsItemQuantityDefault)
+  "quantity": zod.number().int().default(checkoutBodyItemsItemQuantityDefault)
 })),
   "couponCode": zod.string().nullable(),
   "paymentMethod": zod.string(),
@@ -192,23 +192,41 @@ export const PostApiV1CheckoutBody = zod.object({
   "returnUrl": zod.string().nullable()
 })
 
-export const PostApiV1CheckoutResponse = zod.unknown()
+export const CheckoutResponse = zod.object({
+  "orderId": zod.string().uuid(),
+  "number": zod.string(),
+  "status": zod.string(),
+  "total": zod.number().int(),
+  "currency": zod.string(),
+  "paymentInstruction": zod.string(),
+  "pollAfterMs": zod.number().int()
+})
 
 
-export const GetApiV1OrdersIdParams = zod.object({
+export const GetOrderParams = zod.object({
   "id": zod.coerce.string().uuid()
 })
 
-export const GetApiV1OrdersIdResponse = zod.unknown()
+export const GetOrderResponse = zod.object({
+  "orderId": zod.string().uuid(),
+  "number": zod.string(),
+  "status": zod.string(),
+  "total": zod.number().int(),
+  "currency": zod.string(),
+  "paymentInstruction": zod.string(),
+  "pollAfterMs": zod.number().int()
+})
 
 
-export const PostApiV1CouponsValidateQueryParams = zod.object({
+export const ValidateCouponQueryParams = zod.object({
   "code": zod.coerce.string(),
   "subtotal": zod.coerce.number().int(),
   "userId": zod.coerce.string().uuid()
 })
 
-export const PostApiV1CouponsValidateResponse = zod.unknown()
+export const ValidateCouponResponse = zod.object({
+  "discount": zod.number().int()
+})
 
 
 export const PostApiV1WebhooksPaymentsProviderParams = zod.object({
@@ -245,7 +263,20 @@ export const DeleteApiV1SessionsIdReserveParams = zod.object({
 export const DeleteApiV1SessionsIdReserveResponse = zod.unknown()
 
 
-export const GetApiV1MeEnrollmentsResponse = zod.unknown()
+export const ListMyEnrollmentsResponseItem = zod.object({
+  "userId": zod.string().uuid().optional(),
+  "courseId": zod.string().uuid().optional(),
+  "orderId": zod.string().uuid().nullish(),
+  "source": zod.string().optional(),
+  "status": zod.string().optional(),
+  "expiresAt": zod.coerce.date().nullish(),
+  "completedAt": zod.coerce.date().nullish(),
+  "certificateId": zod.string().uuid().nullish(),
+  "id": zod.string().uuid().optional(),
+  "createdAt": zod.coerce.date().optional(),
+  "updatedAt": zod.coerce.date().optional()
+})
+export const ListMyEnrollmentsResponse = zod.array(ListMyEnrollmentsResponseItem)
 
 
 export const PostApiV1LessonsIdCompleteParams = zod.object({
@@ -289,5 +320,12 @@ export const GetApiV1AdminCoursesQueryParams = zod.object({
 })
 
 export const GetApiV1AdminCoursesResponse = zod.unknown()
+
+
+export const SimulatePaymentParams = zod.object({
+  "orderId": zod.coerce.string().uuid()
+})
+
+export const SimulatePaymentResponse = zod.unknown()
 
 

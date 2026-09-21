@@ -7,6 +7,8 @@ export type CourseType = 'workshop' | 'ai';
 export type Lesson = { title: string; duration: string; freePreview: boolean };
 export type Section = { title: string; lessons: Lesson[] };
 export type Course = {
+  /** Backend GUID; absent on bundled mock entries. */
+  id?: string;
   slug: string;
   title: string;
   type: CourseType;
@@ -27,6 +29,11 @@ export type Course = {
 /** Backend stores money in minor units (cents); TZS displays in shillings. */
 export function minorToMajor(minor: number): number {
   return Math.round(minor / 100);
+}
+
+/** Format major units (whole TZS) for display. */
+export function money(valueMajor: number): string {
+  return `TZS ${valueMajor.toLocaleString('en-TZ')}`;
 }
 
 function uiType(apiType: string, tags: string[]): CourseType {
@@ -68,7 +75,7 @@ const ART: Record<string, { image: string; mark: string }> = {
   'ai-for-content-creators': { image: 'teal', mark: 'AI' },
 };
 
-function artFor(slug: string): { image: string; mark: string } {
+export function artFor(slug: string): { image: string; mark: string } {
   return ART[slug] ?? { image: 'ink', mark: '•' };
 }
 
@@ -81,6 +88,7 @@ function ratingOf(value: number | string): number {
 export function toUiCourse(s: CourseSummary): Course {
   const art = artFor(s.slug);
   return {
+    id: s.id,
     slug: s.slug,
     title: s.title,
     type: uiType(s.type, s.tags),
@@ -110,6 +118,7 @@ export function toUiCourseDetail(d: ApiCourseDetail): Course {
     })),
   }));
   return {
+    id: d.id,
     slug: d.slug,
     title: d.title,
     type: uiType(d.type, d.tags),

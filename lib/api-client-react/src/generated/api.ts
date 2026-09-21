@@ -25,20 +25,23 @@ import type {
 
 import type {
   CheckoutRequest,
+  CheckoutResult,
   CourseDetail,
   CourseListResponse,
   CreateCourseRequest,
+  Enrollment,
   GetApiV1AdminCoursesParams,
   ListCoursesParams,
   LoginRequest,
   MeResponse,
   PaymentEvent,
-  PostApiV1CouponsValidateParams,
   ProblemDetails,
   RegisterRequest,
   RegistrationResponse,
   Review,
-  TokenResponse
+  TokenResponse,
+  ValidateCouponParams,
+  ValidateCouponResult
 } from './api.schemas';
 
 import { customFetch } from '../custom-fetch';
@@ -1000,7 +1003,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(getCreateCourseMutationOptions(options), queryClient);
     }
 
-export const getPostApiV1CheckoutUrl = () => {
+export const getCheckoutUrl = () => {
 
 
 
@@ -1008,7 +1011,7 @@ export const getPostApiV1CheckoutUrl = () => {
   return `/api/v1/checkout`
 }
 
-export const postApiV1Checkout = async (checkoutRequest: CheckoutRequest, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+export const checkout = async (checkoutRequest: CheckoutRequest, options?: Parameters<typeof customFetch>[1]): Promise<CheckoutResult> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -1024,7 +1027,7 @@ export const postApiV1Checkout = async (checkoutRequest: CheckoutRequest, option
     }
     return headers;
   };
-return customFetch<void>(getPostApiV1CheckoutUrl(),
+return customFetch<CheckoutResult>(getCheckoutUrl(),
   {
     ...options,
     method: 'POST',
@@ -1037,13 +1040,13 @@ return customFetch<void>(getPostApiV1CheckoutUrl(),
 
 
 
-export const getPostApiV1CheckoutMutationKey = () => ['postApiV1Checkout'] as const;
+export const getCheckoutMutationKey = () => ['checkout'] as const;
 
-export const getPostApiV1CheckoutMutationOptions = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1Checkout>>, TError,PostApiV1CheckoutMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiV1Checkout>>, TError,PostApiV1CheckoutMutationVariables, TContext> => {
+export const getCheckoutMutationOptions = <TError = ErrorType<ProblemDetails>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof checkout>>, TError,CheckoutMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof checkout>>, TError,CheckoutMutationVariables, TContext> => {
 
-const mutationKey = getPostApiV1CheckoutMutationKey();
+const mutationKey = getCheckoutMutationKey();
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -1053,10 +1056,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1Checkout>>, PostApiV1CheckoutMutationVariables> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof checkout>>, CheckoutMutationVariables> = (props) => {
           const {data} = props ?? {};
 
-          return  postApiV1Checkout(data,requestOptions)
+          return  checkout(data,requestOptions)
         }
 
 
@@ -1066,23 +1069,23 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiV1CheckoutMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1Checkout>>>
-    export type PostApiV1CheckoutMutationBody = BodyType<CheckoutRequest>
-    export type PostApiV1CheckoutMutationError = ErrorType<unknown>
-    export type PostApiV1CheckoutMutationVariables = {data: BodyType<CheckoutRequest>}
+    export type CheckoutMutationResult = NonNullable<Awaited<ReturnType<typeof checkout>>>
+    export type CheckoutMutationBody = BodyType<CheckoutRequest>
+    export type CheckoutMutationError = ErrorType<ProblemDetails>
+    export type CheckoutMutationVariables = {data: BodyType<CheckoutRequest>}
 
-    export const usePostApiV1Checkout = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1Checkout>>, TError,PostApiV1CheckoutMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+    export const useCheckout = <TError = ErrorType<ProblemDetails>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof checkout>>, TError,CheckoutMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiV1Checkout>>,
+        Awaited<ReturnType<typeof checkout>>,
         TError,
-        PostApiV1CheckoutMutationVariables,
+        CheckoutMutationVariables,
         TContext
       > => {
-      return useMutation(getPostApiV1CheckoutMutationOptions(options), queryClient);
+      return useMutation(getCheckoutMutationOptions(options), queryClient);
     }
 
-export const getGetApiV1OrdersIdUrl = (id: string,) => {
+export const getGetOrderUrl = (id: string,) => {
 
 
 
@@ -1090,9 +1093,9 @@ export const getGetApiV1OrdersIdUrl = (id: string,) => {
   return `/api/v1/orders/${id}`
 }
 
-export const getApiV1OrdersId = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+export const getOrder = async (id: string, options?: Parameters<typeof customFetch>[1]): Promise<CheckoutResult> => {
 
-  return customFetch<void>(getGetApiV1OrdersIdUrl(id),
+  return customFetch<CheckoutResult>(getGetOrderUrl(id),
   {
     ...options,
     method: 'GET'
@@ -1105,66 +1108,66 @@ export const getApiV1OrdersId = async (id: string, options?: Parameters<typeof c
 
 
 
-export const getGetApiV1OrdersIdQueryKey = (id: string,) => {
+export const getGetOrderQueryKey = (id: string,) => {
     return [
     `/api/v1/orders/${id}`
     ] as const;
     }
 
 
-export const getGetApiV1OrdersIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1OrdersId>>, TError = ErrorType<unknown>>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1OrdersId>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetOrderQueryOptions = <TData = Awaited<ReturnType<typeof getOrder>>, TError = ErrorType<ProblemDetails>>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOrder>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1OrdersIdQueryKey(id);
+  const queryKey =  queryOptions?.queryKey ?? getGetOrderQueryKey(id);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1OrdersId>>> = ({ signal }) => getApiV1OrdersId(id, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getOrder>>> = ({ signal }) => getOrder(id, { signal, ...requestOptions });
 
 
 
 
 
-   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1OrdersId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: id !== null && id !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getOrder>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1OrdersIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1OrdersId>>>
-export type GetApiV1OrdersIdQueryError = ErrorType<unknown>
+export type GetOrderQueryResult = NonNullable<Awaited<ReturnType<typeof getOrder>>>
+export type GetOrderQueryError = ErrorType<ProblemDetails>
 
 
-export function useGetApiV1OrdersId<TData = Awaited<ReturnType<typeof getApiV1OrdersId>>, TError = ErrorType<unknown>>(
- id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1OrdersId>>, TError, TData>> & Pick<
+export function useGetOrder<TData = Awaited<ReturnType<typeof getOrder>>, TError = ErrorType<ProblemDetails>>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOrder>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1OrdersId>>,
+          Awaited<ReturnType<typeof getOrder>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1OrdersId>>
+          Awaited<ReturnType<typeof getOrder>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1OrdersId<TData = Awaited<ReturnType<typeof getApiV1OrdersId>>, TError = ErrorType<unknown>>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1OrdersId>>, TError, TData>> & Pick<
+export function useGetOrder<TData = Awaited<ReturnType<typeof getOrder>>, TError = ErrorType<ProblemDetails>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOrder>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1OrdersId>>,
+          Awaited<ReturnType<typeof getOrder>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1OrdersId>>
+          Awaited<ReturnType<typeof getOrder>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1OrdersId<TData = Awaited<ReturnType<typeof getApiV1OrdersId>>, TError = ErrorType<unknown>>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1OrdersId>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useGetOrder<TData = Awaited<ReturnType<typeof getOrder>>, TError = ErrorType<ProblemDetails>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOrder>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useGetApiV1OrdersId<TData = Awaited<ReturnType<typeof getApiV1OrdersId>>, TError = ErrorType<unknown>>(
- id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1OrdersId>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useGetOrder<TData = Awaited<ReturnType<typeof getOrder>>, TError = ErrorType<ProblemDetails>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getOrder>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1OrdersIdQueryOptions(id,options)
+  const queryOptions = getGetOrderQueryOptions(id,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -1177,7 +1180,7 @@ export function useGetApiV1OrdersId<TData = Awaited<ReturnType<typeof getApiV1Or
 
 
 
-export const getPostApiV1CouponsValidateUrl = (params: PostApiV1CouponsValidateParams,) => {
+export const getValidateCouponUrl = (params: ValidateCouponParams,) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
@@ -1192,9 +1195,9 @@ export const getPostApiV1CouponsValidateUrl = (params: PostApiV1CouponsValidateP
   return stringifiedParams.length > 0 ? `/api/v1/coupons/validate?${stringifiedParams}` : `/api/v1/coupons/validate`
 }
 
-export const postApiV1CouponsValidate = async (params: PostApiV1CouponsValidateParams, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+export const validateCoupon = async (params: ValidateCouponParams, options?: Parameters<typeof customFetch>[1]): Promise<ValidateCouponResult> => {
 
-  return customFetch<void>(getPostApiV1CouponsValidateUrl(params),
+  return customFetch<ValidateCouponResult>(getValidateCouponUrl(params),
   {
     ...options,
     method: 'POST'
@@ -1207,13 +1210,13 @@ export const postApiV1CouponsValidate = async (params: PostApiV1CouponsValidateP
 
 
 
-export const getPostApiV1CouponsValidateMutationKey = () => ['postApiV1CouponsValidate'] as const;
+export const getValidateCouponMutationKey = () => ['validateCoupon'] as const;
 
-export const getPostApiV1CouponsValidateMutationOptions = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1CouponsValidate>>, TError,PostApiV1CouponsValidateMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiV1CouponsValidate>>, TError,PostApiV1CouponsValidateMutationVariables, TContext> => {
+export const getValidateCouponMutationOptions = <TError = ErrorType<ProblemDetails>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof validateCoupon>>, TError,ValidateCouponMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof validateCoupon>>, TError,ValidateCouponMutationVariables, TContext> => {
 
-const mutationKey = getPostApiV1CouponsValidateMutationKey();
+const mutationKey = getValidateCouponMutationKey();
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -1223,10 +1226,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1CouponsValidate>>, PostApiV1CouponsValidateMutationVariables> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof validateCoupon>>, ValidateCouponMutationVariables> = (props) => {
           const {params} = props ?? {};
 
-          return  postApiV1CouponsValidate(params,requestOptions)
+          return  validateCoupon(params,requestOptions)
         }
 
 
@@ -1236,20 +1239,20 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiV1CouponsValidateMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1CouponsValidate>>>
+    export type ValidateCouponMutationResult = NonNullable<Awaited<ReturnType<typeof validateCoupon>>>
 
-    export type PostApiV1CouponsValidateMutationError = ErrorType<unknown>
-    export type PostApiV1CouponsValidateMutationVariables = {params: PostApiV1CouponsValidateParams}
+    export type ValidateCouponMutationError = ErrorType<ProblemDetails>
+    export type ValidateCouponMutationVariables = {params: ValidateCouponParams}
 
-    export const usePostApiV1CouponsValidate = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1CouponsValidate>>, TError,PostApiV1CouponsValidateMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+    export const useValidateCoupon = <TError = ErrorType<ProblemDetails>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof validateCoupon>>, TError,ValidateCouponMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiV1CouponsValidate>>,
+        Awaited<ReturnType<typeof validateCoupon>>,
         TError,
-        PostApiV1CouponsValidateMutationVariables,
+        ValidateCouponMutationVariables,
         TContext
       > => {
-      return useMutation(getPostApiV1CouponsValidateMutationOptions(options), queryClient);
+      return useMutation(getValidateCouponMutationOptions(options), queryClient);
     }
 
 export const getPostApiV1WebhooksPaymentsProviderUrl = (provider: string,) => {
@@ -1471,7 +1474,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(getDeleteApiV1SessionsIdReserveMutationOptions(options), queryClient);
     }
 
-export const getGetApiV1MeEnrollmentsUrl = () => {
+export const getListMyEnrollmentsUrl = () => {
 
 
 
@@ -1479,9 +1482,9 @@ export const getGetApiV1MeEnrollmentsUrl = () => {
   return `/api/v1/me/enrollments`
 }
 
-export const getApiV1MeEnrollments = async ( options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+export const listMyEnrollments = async ( options?: Parameters<typeof customFetch>[1]): Promise<Enrollment[]> => {
 
-  return customFetch<void>(getGetApiV1MeEnrollmentsUrl(),
+  return customFetch<Enrollment[]>(getListMyEnrollmentsUrl(),
   {
     ...options,
     method: 'GET'
@@ -1494,66 +1497,66 @@ export const getApiV1MeEnrollments = async ( options?: Parameters<typeof customF
 
 
 
-export const getGetApiV1MeEnrollmentsQueryKey = () => {
+export const getListMyEnrollmentsQueryKey = () => {
     return [
     `/api/v1/me/enrollments`
     ] as const;
     }
 
 
-export const getGetApiV1MeEnrollmentsQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1MeEnrollments>>, TError = ErrorType<unknown>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1MeEnrollments>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getListMyEnrollmentsQueryOptions = <TData = Awaited<ReturnType<typeof listMyEnrollments>>, TError = ErrorType<unknown>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listMyEnrollments>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1MeEnrollmentsQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getListMyEnrollmentsQueryKey();
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1MeEnrollments>>> = ({ signal }) => getApiV1MeEnrollments({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listMyEnrollments>>> = ({ signal }) => listMyEnrollments({ signal, ...requestOptions });
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1MeEnrollments>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listMyEnrollments>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1MeEnrollmentsQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1MeEnrollments>>>
-export type GetApiV1MeEnrollmentsQueryError = ErrorType<unknown>
+export type ListMyEnrollmentsQueryResult = NonNullable<Awaited<ReturnType<typeof listMyEnrollments>>>
+export type ListMyEnrollmentsQueryError = ErrorType<unknown>
 
 
-export function useGetApiV1MeEnrollments<TData = Awaited<ReturnType<typeof getApiV1MeEnrollments>>, TError = ErrorType<unknown>>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1MeEnrollments>>, TError, TData>> & Pick<
+export function useListMyEnrollments<TData = Awaited<ReturnType<typeof listMyEnrollments>>, TError = ErrorType<unknown>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listMyEnrollments>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1MeEnrollments>>,
+          Awaited<ReturnType<typeof listMyEnrollments>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1MeEnrollments>>
+          Awaited<ReturnType<typeof listMyEnrollments>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1MeEnrollments<TData = Awaited<ReturnType<typeof getApiV1MeEnrollments>>, TError = ErrorType<unknown>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1MeEnrollments>>, TError, TData>> & Pick<
+export function useListMyEnrollments<TData = Awaited<ReturnType<typeof listMyEnrollments>>, TError = ErrorType<unknown>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listMyEnrollments>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1MeEnrollments>>,
+          Awaited<ReturnType<typeof listMyEnrollments>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1MeEnrollments>>
+          Awaited<ReturnType<typeof listMyEnrollments>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1MeEnrollments<TData = Awaited<ReturnType<typeof getApiV1MeEnrollments>>, TError = ErrorType<unknown>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1MeEnrollments>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useListMyEnrollments<TData = Awaited<ReturnType<typeof listMyEnrollments>>, TError = ErrorType<unknown>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listMyEnrollments>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useGetApiV1MeEnrollments<TData = Awaited<ReturnType<typeof getApiV1MeEnrollments>>, TError = ErrorType<unknown>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1MeEnrollments>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useListMyEnrollments<TData = Awaited<ReturnType<typeof listMyEnrollments>>, TError = ErrorType<unknown>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listMyEnrollments>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1MeEnrollmentsQueryOptions(options)
+  const queryOptions = getListMyEnrollmentsQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -1913,4 +1916,72 @@ export function useGetApiV1AdminCourses<TData = Awaited<ReturnType<typeof getApi
 
 
 
+
+export const getSimulatePaymentUrl = (orderId: string,) => {
+
+
+
+
+  return `/api/v1/dev/payments/simulate/${orderId}`
+}
+
+export const simulatePayment = async (orderId: string, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+
+  return customFetch<void>(getSimulatePaymentUrl(orderId),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getSimulatePaymentMutationKey = () => ['simulatePayment'] as const;
+
+export const getSimulatePaymentMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof simulatePayment>>, TError,SimulatePaymentMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof simulatePayment>>, TError,SimulatePaymentMutationVariables, TContext> => {
+
+const mutationKey = getSimulatePaymentMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof simulatePayment>>, SimulatePaymentMutationVariables> = (props) => {
+          const {orderId} = props ?? {};
+
+          return  simulatePayment(orderId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SimulatePaymentMutationResult = NonNullable<Awaited<ReturnType<typeof simulatePayment>>>
+
+    export type SimulatePaymentMutationError = ErrorType<unknown>
+    export type SimulatePaymentMutationVariables = {orderId: string}
+
+    export const useSimulatePayment = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof simulatePayment>>, TError,SimulatePaymentMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof simulatePayment>>,
+        TError,
+        SimulatePaymentMutationVariables,
+        TContext
+      > => {
+      return useMutation(getSimulatePaymentMutationOptions(options), queryClient);
+    }
 

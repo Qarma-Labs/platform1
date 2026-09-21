@@ -6,6 +6,9 @@ const apiClientReactSrc = path.resolve(root, "lib", "api-client-react", "src");
 const apiZodSrc = path.resolve(root, "lib", "api-zod", "src");
 
 // Our exports make assumptions about the title of the API being "Api" (i.e. generated output is `api.ts`).
+// Naming convention (backend): operation response components use the *Result
+// suffix, never *Response — orval's zod client already emits <OperationId>Response
+// consts, and a same-stem component would collide in lib/api-zod.
 const titleTransformer: InputTransformerFn = (config) => {
   config.info ??= {};
   config.info.title = "Api";
