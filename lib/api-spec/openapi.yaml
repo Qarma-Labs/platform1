@@ -3,7 +3,7 @@ info:
   title: Elearn.Api | v1
   version: 1.0.0
 servers:
-  - url: http://localhost:5000/
+  - url: http://localhost:5001/
 paths:
   /health:
     get:
@@ -134,6 +134,7 @@ paths:
     get:
       tags:
         - catalog
+      operationId: listCourses
       parameters:
         - name: q
           in: query
@@ -175,7 +176,6 @@ paths:
             format: double
         - name: sort
           in: query
-          required: true
           schema:
             type: string
         - name: cursor
@@ -184,17 +184,21 @@ paths:
             type: string
         - name: limit
           in: query
-          required: true
           schema:
             type: integer
             format: int32
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseListResponse'
   /api/v1/courses/{slug}:
     get:
       tags:
         - catalog
+      operationId: getCourse
       parameters:
         - name: slug
           in: path
@@ -204,10 +208,21 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseDetail'
+        '404':
+          description: Not Found
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetails'
   /api/v1/categories:
     get:
       tags:
         - catalog
+      operationId: listCategories
       responses:
         '200':
           description: OK
@@ -215,6 +230,7 @@ paths:
     post:
       tags:
         - catalog
+      operationId: createCourse
       requestBody:
         content:
           application/json:
@@ -454,6 +470,166 @@ components:
           type:
             - 'null'
             - string
+    CourseDetail:
+      required:
+        - id
+        - slug
+        - type
+        - title
+        - subtitle
+        - description
+        - language
+        - level
+        - price
+        - currency
+        - ratingAvg
+        - ratingCount
+        - enrollmentCount
+        - thumbnailKey
+        - status
+        - publishedAt
+        - instructorName
+        - tags
+        - curriculum
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        slug:
+          type: string
+        type:
+          type: string
+        title:
+          type: string
+        subtitle:
+          type:
+            - 'null'
+            - string
+        description:
+          type:
+            - 'null'
+            - string
+        language:
+          type: string
+        level:
+          type: string
+        price:
+          type: integer
+          format: int64
+        currency:
+          type: string
+        ratingAvg:
+          pattern: ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
+          type:
+            - number
+            - string
+          format: double
+        ratingCount:
+          type: integer
+          format: int32
+        enrollmentCount:
+          type: integer
+          format: int32
+        thumbnailKey:
+          type:
+            - 'null'
+            - string
+        status:
+          type: string
+        publishedAt:
+          type:
+            - 'null'
+            - string
+          format: date-time
+        instructorName:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        curriculum:
+          type: array
+          items:
+            $ref: '#/components/schemas/SectionOutline'
+    CourseListResponse:
+      required:
+        - items
+        - hasMore
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CourseSummary'
+        hasMore:
+          type: boolean
+    CourseSummary:
+      required:
+        - id
+        - slug
+        - title
+        - subtitle
+        - type
+        - language
+        - level
+        - price
+        - currency
+        - ratingAvg
+        - ratingCount
+        - enrollmentCount
+        - thumbnailKey
+        - status
+        - instructorName
+        - tags
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        slug:
+          type: string
+        title:
+          type: string
+        subtitle:
+          type:
+            - 'null'
+            - string
+        type:
+          type: string
+        language:
+          type: string
+        level:
+          type: string
+        price:
+          type: integer
+          format: int64
+        currency:
+          type: string
+        ratingAvg:
+          pattern: ^-?(?:0|[1-9]\d*)(?:\.\d+)?$
+          type:
+            - number
+            - string
+          format: double
+        ratingCount:
+          type: integer
+          format: int32
+        enrollmentCount:
+          type: integer
+          format: int32
+        thumbnailKey:
+          type:
+            - 'null'
+            - string
+        status:
+          type: string
+        instructorName:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
     CreateCourseRequest:
       required:
         - title
@@ -477,6 +653,31 @@ components:
           format: int64
         currency:
           type: string
+    LessonOutline:
+      required:
+        - id
+        - title
+        - type
+        - durationSec
+        - isPreview
+        - position
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        type:
+          type: string
+        durationSec:
+          type: integer
+          format: int32
+        isPreview:
+          type: boolean
+        position:
+          type: integer
+          format: int32
     LoginRequest:
       required:
         - identifier
@@ -683,6 +884,26 @@ components:
         updatedAt:
           type: string
           format: date-time
+    SectionOutline:
+      required:
+        - id
+        - title
+        - position
+        - lessons
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        position:
+          type: integer
+          format: int32
+        lessons:
+          type: array
+          items:
+            $ref: '#/components/schemas/LessonOutline'
     TokenPair:
       required:
         - accessToken

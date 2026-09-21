@@ -5,7 +5,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type GetApiV1CoursesParams = {
+export type ListCoursesParams = {
 q?: string;
 category?: string;
 level?: string;
@@ -17,7 +17,7 @@ maxPrice?: bigint;
  * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?$
  */
 minRating?: number | string;
-sort: string;
+sort?: string;
 cursor?: string;
-limit: number;
+limit?: number;
 };

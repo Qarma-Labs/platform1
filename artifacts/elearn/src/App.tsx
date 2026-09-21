@@ -22,26 +22,8 @@ import { toApiErrorInfo } from '@/lib/auth-session';
 import { Toaster } from '@/components/ui/toaster';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import NotFound from '@/pages/not-found';
-
-type CourseType = 'workshop' | 'ai';
-type Lesson = { title: string; duration: string; freePreview: boolean };
-type Section = { title: string; lessons: Lesson[] };
-type Course = {
-  slug: string;
-  title: string;
-  type: CourseType;
-  description: string;
-  instructor: string;
-  instructorRole: string;
-  duration: string;
-  level: string;
-  price: number;
-  rating: number;
-  students: number;
-  image: string;
-  mark: string;
-  sections: Section[];
-};
+import { useCourseDetail, useCourses } from '@/hooks/use-catalog';
+import type { Course, CourseType } from '@/lib/catalog';
 
 const courses: Course[] = [
   {
@@ -204,7 +186,7 @@ function Header() {
       {open && <div style={{ position: 'absolute', top: '68px', left: 0, right: 0, padding: '18px 16px', background: 'hsl(43 42% 98%)', borderBottom: '1px solid hsl(42 22% 81%)' }}>
         <div style={{ display: 'grid', gap: 15 }}>
           <Link href="/courses" className="nav-link" onClick={() => setOpen(false)} data-testid="link-mobile-courses">Explore courses</Link>
-          <Link href="/login" className="nav-link" onClick={() => setOpen(false)} data-testid="link-mobile-login">Log in</Link>
+          {status === 'authed' && user ? <button className="nav-link" onClick={async () => { await logout(); setOpen(false); setLocation('/'); }} data-testid="button-mobile-logout">Log out ({user.fullName})</button> : <Link href="/login" className="nav-link" onClick={() => setOpen(false)} data-testid="link-mobile-login">Log in</Link>}
         </div>
       </div>}
     </header>
@@ -246,8 +228,10 @@ function CourseCard({ course }: { course: Course }) {
 
 function Home() {
   const [, setLocation] = useLocation();
+  const { status } = useAuth();
   const [toast, setToast] = useState('');
-  const featured = courses.slice(0, 3);
+  const { courses: catalog } = useCourses({ limit: 3 }, courses);
+  const featured = catalog.slice(0, 3);
   const showToast = (message: string) => { setToast(message); window.setTimeout(() => setToast(''), 3300); };
   return <div className="app-shell">
     <Header />
@@ -301,7 +285,7 @@ function Home() {
 
       <section className="section-tight"><div className="container-wide"><div className="testimonial"><div><span className="quote-mark">“</span><p className="eyebrow" style={{ color: 'hsl(44 91% 62%)' }}>From the Elearn community</p></div><div><p className="quote">I stopped waiting to feel ready. The course gave me one clear thing to try, and that first try changed everything.</p><p className="quote-by">— ZAWADI M. / SMALL BUSINESS OWNER, ARUSHA</p></div></div></div></section>
 
-      <section className="section"><div className="container-wide"><div className="cta-panel"><div><p className="eyebrow">Your turn</p><h2 className="display">Make your next move a useful one.</h2></div><button className="button button-primary" onClick={() => { setLocation('/register'); showToast('You are one step away from your first lesson.'); }} data-testid="button-final-cta">Start learning <ArrowRight size={16} /></button></div></div></section>
+      <section className="section"><div className="container-wide"><div className="cta-panel"><div><p className="eyebrow">Your turn</p><h2 className="display">Make your next move a useful one.</h2></div><button className="button button-primary" onClick={() => { if (status === 'authed') { setLocation('/courses'); } else { setLocation('/register'); showToast('You are one step away from your first lesson.'); } }} data-testid="button-final-cta">Start learning <ArrowRight size={16} /></button></div></div></section>
     </main>
     <Footer />
     {toast && <Toast message={toast} onClose={() => setToast('')} />}
@@ -314,28 +298,48 @@ function Courses() {
   const [location] = useLocation();
   const queryType = new URLSearchParams(location.split('?')[1] || '').get('type') as CourseType | null;
   const effectiveFilter = filter === 'all' && (queryType === 'workshop' || queryType === 'ai') ? queryType : filter;
-  const shownCourses = useMemo(() => courses.filter(course => {
-    const matchesType = effectiveFilter === 'all' || course.type === effectiveFilter;
-    const needle = search.toLowerCase();
-    return matchesType && (!needle || `${course.title} ${course.description} ${course.instructor}`.toLowerCase().includes(needle));
-  }), [effectiveFilter, search]);
+  const { courses: catalog, source } = useCourses({
+    q: search || undefined,
+    category: effectiveFilter === 'all' ? undefined : effectiveFilter === 'workshop' ? 'workshops' : 'ai-courses',
+    limit: 24,
+  }, courses);
+  const shownCourses = useMemo(() => {
+    // The API already filters by search/category; the client filter only
+    // applies to the mock fallback (which also searches descriptions).
+    if (source === 'api') return catalog;
+    return catalog.filter(course => {
+      const matchesType = effectiveFilter === 'all' || course.type === effectiveFilter;
+      const needle = search.toLowerCase();
+      return matchesType && (!needle || `${course.title} ${course.description} ${course.instructor}`.toLowerCase().includes(needle));
+    });
+  }, [catalog, source, effectiveFilter, search]);
   return <div className="app-shell"><Header /><main><section className="page-hero"><div className="container-wide"><p className="eyebrow" style={{ color: 'hsl(44 91% 62%)' }}>The course shelf</p><h1 className="display">Find your useful<br />next thing.</h1><p>Learn from people who make, build and teach in the real world. Start with one course and see what changes.</p></div></section><section className="container-wide"><div className="catalog-controls"><div className="search-box"><Search size={17} /><input type="search" value={search} onChange={event => setSearch(event.target.value)} placeholder="Search courses, skills or teachers" data-testid="input-course-search" /></div><div className="filter-row"><button className={`filter-button ${effectiveFilter === 'all' ? 'active' : ''}`} onClick={() => setFilter('all')} data-testid="button-filter-all">All courses</button><button className={`filter-button ${effectiveFilter === 'workshop' ? 'active' : ''}`} onClick={() => setFilter('workshop')} data-testid="button-filter-workshops">Workshops</button><button className={`filter-button ${effectiveFilter === 'ai' ? 'active' : ''}`} onClick={() => setFilter('ai')} data-testid="button-filter-ai">AI courses</button></div></div><div className="catalog-grid"><p className="results-note" data-testid="text-course-count">{shownCourses.length} courses to get you moving</p>{shownCourses.length > 0 ? <div className="course-grid">{shownCourses.map(course => <CourseCard key={course.slug} course={course} />)}</div> : <div className="empty-state"><Search size={26} color="hsl(177 63% 31%)" /><h3>Nothing by that name yet.</h3><p>Try a broader search or look through all of our courses.</p><button className="button button-ghost" onClick={() => { setSearch(''); setFilter('all'); }} data-testid="button-clear-search">Clear search</button></div>}</div></section></main><Footer /></div>;
 }
 
 function CourseDetail() {
   const { slug } = useParams<{ slug: string }>();
   const [, setLocation] = useLocation();
+  const { status } = useAuth();
   const [toast, setToast] = useState('');
-  const course = courses.find(item => item.slug === slug);
+  const { course } = useCourseDetail(slug, courses.find(item => item.slug === slug));
   if (!course) return <NotFound />;
   const totalLessons = course.sections.reduce((total, section) => total + section.lessons.length, 0);
-  const enroll = () => setToast('Course saved. Create your free account to begin learning.');
+  const enroll = () => {
+    if (status !== 'authed') {
+      setLocation(`/register?next=${encodeURIComponent(`/courses/${course.slug}`)}`);
+      return;
+    }
+    setLocation(`/checkout/${course.slug}`);
+  };
   return <div className="app-shell"><Header /><main><section className="detail-hero"><div className="container-wide"><Link href="/courses" className="back-link" data-testid="link-back-courses"><ArrowRight size={14} style={{ transform: 'rotate(180deg)' }} /> All courses</Link><div className="detail-layout"><div><span className="course-type">{course.type === 'ai' ? 'AI COURSE' : 'WORKSHOP'}</span><h1 className="display">{course.title}</h1><p className="detail-description">{course.description}</p></div><CourseArt course={course} detail /></div></div></section><section className="container-wide detail-main"><div><h2 className="display detail-section-title">Inside the course</h2>{course.sections.map((section, index) => <div className="outline-section" key={section.title}><div className="outline-heading"><span style={{ color: 'hsl(191 34% 17%)', fontFamily: 'var(--app-font-sans)', fontSize: 14, fontWeight: 700 }}>{String(index + 1).padStart(2, '0')} &nbsp; {section.title}</span><span>{section.lessons.length} lessons</span></div>{section.lessons.map(lesson => <div className="lesson-row" key={lesson.title}>{lesson.freePreview ? <PlayCircle size={16} /> : <BookOpen size={16} />}<span>{lesson.title}</span>{lesson.freePreview && <span className="preview-tag">Preview</span>}<span className="lesson-duration">{lesson.duration}</span></div>)}</div>)}</div><aside><div className="enroll-card"><p className="eyebrow">Start learning today</p><p className="enroll-price">{money(course.price)}</p><button className="button button-primary" onClick={enroll} data-testid="button-enroll-course">Enroll in this course <ArrowRight size={16} /></button><div className="meta-list"><div className="meta-row"><span>Course level</span><span>{course.level}</span></div><div className="meta-row"><span>Total time</span><span>{course.duration}</span></div><div className="meta-row"><span>Lessons</span><span>{totalLessons}</span></div><div className="meta-row"><span>Learners</span><span>{course.students}</span></div><div className="meta-row"><span>Rating</span><span><Star size={12} fill="currentColor" style={{ verticalAlign: 'middle', color: 'hsl(37 76% 51%)' }} /> {course.rating}</span></div></div><div className="instructor-card"><div className="avatar">{course.instructor.split(' ').map(name => name[0]).join('')}</div><div><div className="instructor-name">{course.instructor}</div><div className="instructor-role">{course.instructorRole}</div></div></div><p className="notice">You will get lifetime access to the course lessons and practical exercises.</p></div></aside></section></main><Footer />{toast && <Toast message={toast} onClose={() => { setToast(''); setLocation('/register'); }} />}</div>;
 }
 
 function AuthPage({ mode }: { mode: 'login' | 'register' }) {
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   const { status, login, register } = useAuth();
+  // After auth, return to where the user came from (?next=/courses/slug).
+  const requestedNext = new URLSearchParams(location.split('?')[1] || '').get('next');
+  const safeNext = requestedNext && requestedNext.startsWith('/') && !requestedNext.startsWith('//') ? requestedNext : '/courses';
   const [form, setForm] = useState({ name: '', email: '', password: '' });
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
   const [formError, setFormError] = useState('');
@@ -346,8 +350,8 @@ function AuthPage({ mode }: { mode: 'login' | 'register' }) {
   const passwordError = fieldErrors.password?.[0];
 
   useEffect(() => {
-    if (status === 'authed') setLocation('/courses');
-  }, [status, setLocation]);
+    if (status === 'authed') setLocation(safeNext);
+  }, [status, setLocation, safeNext]);
 
   const update = (field: 'name' | 'email' | 'password', value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -372,7 +376,7 @@ function AuthPage({ mode }: { mode: 'login' | 'register' }) {
       } else {
         await login({ identifier: form.email, password: form.password });
       }
-      setLocation('/courses');
+      setLocation(safeNext);
     } catch (error) {
       const info = toApiErrorInfo(error);
       setFieldErrors(info.fields);

@@ -77,10 +77,10 @@ export const GetMeResponse = zod.object({
 export const ForgotPasswordResponse = zod.void()
 
 
-export const getApiV1CoursesQueryMinRatingRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$');
+export const listCoursesQueryMinRatingRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?(?:[eE][+-]?\\d+)?$');
 
 
-export const GetApiV1CoursesQueryParams = zod.object({
+export const ListCoursesQueryParams = zod.object({
   "q": zod.coerce.string().optional(),
   "category": zod.coerce.string().optional(),
   "level": zod.coerce.string().optional(),
@@ -88,26 +88,84 @@ export const GetApiV1CoursesQueryParams = zod.object({
   "language": zod.coerce.string().optional(),
   "minPrice": zod.coerce.number().int().optional(),
   "maxPrice": zod.coerce.number().int().optional(),
-  "minRating": zod.union([zod.coerce.number(),zod.coerce.string().regex(getApiV1CoursesQueryMinRatingRegExpTwo)]).optional(),
-  "sort": zod.coerce.string(),
+  "minRating": zod.union([zod.coerce.number(),zod.coerce.string().regex(listCoursesQueryMinRatingRegExpTwo)]).optional(),
+  "sort": zod.coerce.string().optional(),
   "cursor": zod.coerce.string().optional(),
-  "limit": zod.coerce.number().int()
+  "limit": zod.coerce.number().int().optional()
 })
 
-export const GetApiV1CoursesResponse = zod.unknown()
+export const listCoursesResponseItemsItemRatingAvgRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 
 
-export const GetApiV1CoursesSlugParams = zod.object({
+export const ListCoursesResponse = zod.object({
+  "items": zod.array(zod.object({
+  "id": zod.string().uuid(),
+  "slug": zod.string(),
+  "title": zod.string(),
+  "subtitle": zod.string().nullable(),
+  "type": zod.string(),
+  "language": zod.string(),
+  "level": zod.string(),
+  "price": zod.number().int(),
+  "currency": zod.string(),
+  "ratingAvg": zod.union([zod.number(),zod.string().regex(listCoursesResponseItemsItemRatingAvgRegExpTwo)]),
+  "ratingCount": zod.number().int(),
+  "enrollmentCount": zod.number().int(),
+  "thumbnailKey": zod.string().nullable(),
+  "status": zod.string(),
+  "instructorName": zod.string(),
+  "tags": zod.array(zod.string())
+})),
+  "hasMore": zod.boolean()
+})
+
+
+export const GetCourseParams = zod.object({
   "slug": zod.coerce.string()
 })
 
-export const GetApiV1CoursesSlugResponse = zod.unknown()
+export const getCourseResponseRatingAvgRegExpTwo = new RegExp('^-?(?:0|[1-9]\\d*)(?:\\.\\d+)?$');
 
 
-export const GetApiV1CategoriesResponse = zod.unknown()
+export const GetCourseResponse = zod.object({
+  "id": zod.string().uuid(),
+  "slug": zod.string(),
+  "type": zod.string(),
+  "title": zod.string(),
+  "subtitle": zod.string().nullable(),
+  "description": zod.string().nullable(),
+  "language": zod.string(),
+  "level": zod.string(),
+  "price": zod.number().int(),
+  "currency": zod.string(),
+  "ratingAvg": zod.union([zod.number(),zod.string().regex(getCourseResponseRatingAvgRegExpTwo)]),
+  "ratingCount": zod.number().int(),
+  "enrollmentCount": zod.number().int(),
+  "thumbnailKey": zod.string().nullable(),
+  "status": zod.string(),
+  "publishedAt": zod.coerce.date().nullable(),
+  "instructorName": zod.string(),
+  "tags": zod.array(zod.string()),
+  "curriculum": zod.array(zod.object({
+  "id": zod.string().uuid(),
+  "title": zod.string(),
+  "position": zod.number().int(),
+  "lessons": zod.array(zod.object({
+  "id": zod.string().uuid(),
+  "title": zod.string(),
+  "type": zod.string(),
+  "durationSec": zod.number().int(),
+  "isPreview": zod.boolean(),
+  "position": zod.number().int()
+}))
+}))
+})
 
 
-export const PostApiV1InstructorCoursesBody = zod.object({
+export const ListCategoriesResponse = zod.unknown()
+
+
+export const CreateCourseBody = zod.object({
   "title": zod.string(),
   "type": zod.string(),
   "language": zod.string(),
@@ -116,7 +174,7 @@ export const PostApiV1InstructorCoursesBody = zod.object({
   "currency": zod.string()
 })
 
-export const PostApiV1InstructorCoursesResponse = zod.unknown()
+export const CreateCourseResponse = zod.unknown()
 
 
 export const postApiV1CheckoutBodyItemsItemQuantityDefault = 1;

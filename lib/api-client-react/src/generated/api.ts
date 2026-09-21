@@ -25,9 +25,11 @@ import type {
 
 import type {
   CheckoutRequest,
+  CourseDetail,
+  CourseListResponse,
   CreateCourseRequest,
   GetApiV1AdminCoursesParams,
-  GetApiV1CoursesParams,
+  ListCoursesParams,
   LoginRequest,
   MeResponse,
   PaymentEvent,
@@ -624,7 +626,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
       return useMutation(getForgotPasswordMutationOptions(options), queryClient);
     }
 
-export const getGetApiV1CoursesUrl = (params: GetApiV1CoursesParams,) => {
+export const getListCoursesUrl = (params?: ListCoursesParams,) => {
   const normalizedParams = new URLSearchParams();
 
   Object.entries(params || {}).forEach(([key, value]) => {
@@ -639,9 +641,9 @@ export const getGetApiV1CoursesUrl = (params: GetApiV1CoursesParams,) => {
   return stringifiedParams.length > 0 ? `/api/v1/courses?${stringifiedParams}` : `/api/v1/courses`
 }
 
-export const getApiV1Courses = async (params: GetApiV1CoursesParams, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+export const listCourses = async (params?: ListCoursesParams, options?: Parameters<typeof customFetch>[1]): Promise<CourseListResponse> => {
 
-  return customFetch<void>(getGetApiV1CoursesUrl(params),
+  return customFetch<CourseListResponse>(getListCoursesUrl(params),
   {
     ...options,
     method: 'GET'
@@ -654,66 +656,66 @@ export const getApiV1Courses = async (params: GetApiV1CoursesParams, options?: P
 
 
 
-export const getGetApiV1CoursesQueryKey = (params?: GetApiV1CoursesParams,) => {
+export const getListCoursesQueryKey = (params?: ListCoursesParams,) => {
     return [
     `/api/v1/courses`, ...(params ? [params] : [])
     ] as const;
     }
 
 
-export const getGetApiV1CoursesQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1Courses>>, TError = ErrorType<unknown>>(params: GetApiV1CoursesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1Courses>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getListCoursesQueryOptions = <TData = Awaited<ReturnType<typeof listCourses>>, TError = ErrorType<unknown>>(params?: ListCoursesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCourses>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1CoursesQueryKey(params);
+  const queryKey =  queryOptions?.queryKey ?? getListCoursesQueryKey(params);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1Courses>>> = ({ signal }) => getApiV1Courses(params, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listCourses>>> = ({ signal }) => listCourses(params, { signal, ...requestOptions });
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1Courses>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listCourses>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1CoursesQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1Courses>>>
-export type GetApiV1CoursesQueryError = ErrorType<unknown>
+export type ListCoursesQueryResult = NonNullable<Awaited<ReturnType<typeof listCourses>>>
+export type ListCoursesQueryError = ErrorType<unknown>
 
 
-export function useGetApiV1Courses<TData = Awaited<ReturnType<typeof getApiV1Courses>>, TError = ErrorType<unknown>>(
- params: GetApiV1CoursesParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1Courses>>, TError, TData>> & Pick<
+export function useListCourses<TData = Awaited<ReturnType<typeof listCourses>>, TError = ErrorType<unknown>>(
+ params: undefined |  ListCoursesParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCourses>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1Courses>>,
+          Awaited<ReturnType<typeof listCourses>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1Courses>>
+          Awaited<ReturnType<typeof listCourses>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1Courses<TData = Awaited<ReturnType<typeof getApiV1Courses>>, TError = ErrorType<unknown>>(
- params: GetApiV1CoursesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1Courses>>, TError, TData>> & Pick<
+export function useListCourses<TData = Awaited<ReturnType<typeof listCourses>>, TError = ErrorType<unknown>>(
+ params?: ListCoursesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCourses>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1Courses>>,
+          Awaited<ReturnType<typeof listCourses>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1Courses>>
+          Awaited<ReturnType<typeof listCourses>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1Courses<TData = Awaited<ReturnType<typeof getApiV1Courses>>, TError = ErrorType<unknown>>(
- params: GetApiV1CoursesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1Courses>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useListCourses<TData = Awaited<ReturnType<typeof listCourses>>, TError = ErrorType<unknown>>(
+ params?: ListCoursesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCourses>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useGetApiV1Courses<TData = Awaited<ReturnType<typeof getApiV1Courses>>, TError = ErrorType<unknown>>(
- params: GetApiV1CoursesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1Courses>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useListCourses<TData = Awaited<ReturnType<typeof listCourses>>, TError = ErrorType<unknown>>(
+ params?: ListCoursesParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCourses>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1CoursesQueryOptions(params,options)
+  const queryOptions = getListCoursesQueryOptions(params,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -726,7 +728,7 @@ export function useGetApiV1Courses<TData = Awaited<ReturnType<typeof getApiV1Cou
 
 
 
-export const getGetApiV1CoursesSlugUrl = (slug: string,) => {
+export const getGetCourseUrl = (slug: string,) => {
 
 
 
@@ -734,9 +736,9 @@ export const getGetApiV1CoursesSlugUrl = (slug: string,) => {
   return `/api/v1/courses/${slug}`
 }
 
-export const getApiV1CoursesSlug = async (slug: string, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+export const getCourse = async (slug: string, options?: Parameters<typeof customFetch>[1]): Promise<CourseDetail> => {
 
-  return customFetch<void>(getGetApiV1CoursesSlugUrl(slug),
+  return customFetch<CourseDetail>(getGetCourseUrl(slug),
   {
     ...options,
     method: 'GET'
@@ -749,66 +751,66 @@ export const getApiV1CoursesSlug = async (slug: string, options?: Parameters<typ
 
 
 
-export const getGetApiV1CoursesSlugQueryKey = (slug: string,) => {
+export const getGetCourseQueryKey = (slug: string,) => {
     return [
     `/api/v1/courses/${slug}`
     ] as const;
     }
 
 
-export const getGetApiV1CoursesSlugQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1CoursesSlug>>, TError = ErrorType<unknown>>(slug: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1CoursesSlug>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getGetCourseQueryOptions = <TData = Awaited<ReturnType<typeof getCourse>>, TError = ErrorType<ProblemDetails>>(slug: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCourse>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1CoursesSlugQueryKey(slug);
+  const queryKey =  queryOptions?.queryKey ?? getGetCourseQueryKey(slug);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1CoursesSlug>>> = ({ signal }) => getApiV1CoursesSlug(slug, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCourse>>> = ({ signal }) => getCourse(slug, { signal, ...requestOptions });
 
 
 
 
 
-   return  { queryKey, queryFn, enabled: slug !== null && slug !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1CoursesSlug>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, enabled: slug !== null && slug !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCourse>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1CoursesSlugQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1CoursesSlug>>>
-export type GetApiV1CoursesSlugQueryError = ErrorType<unknown>
+export type GetCourseQueryResult = NonNullable<Awaited<ReturnType<typeof getCourse>>>
+export type GetCourseQueryError = ErrorType<ProblemDetails>
 
 
-export function useGetApiV1CoursesSlug<TData = Awaited<ReturnType<typeof getApiV1CoursesSlug>>, TError = ErrorType<unknown>>(
- slug: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1CoursesSlug>>, TError, TData>> & Pick<
+export function useGetCourse<TData = Awaited<ReturnType<typeof getCourse>>, TError = ErrorType<ProblemDetails>>(
+ slug: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCourse>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1CoursesSlug>>,
+          Awaited<ReturnType<typeof getCourse>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1CoursesSlug>>
+          Awaited<ReturnType<typeof getCourse>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1CoursesSlug<TData = Awaited<ReturnType<typeof getApiV1CoursesSlug>>, TError = ErrorType<unknown>>(
- slug: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1CoursesSlug>>, TError, TData>> & Pick<
+export function useGetCourse<TData = Awaited<ReturnType<typeof getCourse>>, TError = ErrorType<ProblemDetails>>(
+ slug: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCourse>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1CoursesSlug>>,
+          Awaited<ReturnType<typeof getCourse>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1CoursesSlug>>
+          Awaited<ReturnType<typeof getCourse>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1CoursesSlug<TData = Awaited<ReturnType<typeof getApiV1CoursesSlug>>, TError = ErrorType<unknown>>(
- slug: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1CoursesSlug>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useGetCourse<TData = Awaited<ReturnType<typeof getCourse>>, TError = ErrorType<ProblemDetails>>(
+ slug: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCourse>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useGetApiV1CoursesSlug<TData = Awaited<ReturnType<typeof getApiV1CoursesSlug>>, TError = ErrorType<unknown>>(
- slug: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1CoursesSlug>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useGetCourse<TData = Awaited<ReturnType<typeof getCourse>>, TError = ErrorType<ProblemDetails>>(
+ slug: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCourse>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1CoursesSlugQueryOptions(slug,options)
+  const queryOptions = getGetCourseQueryOptions(slug,options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -821,7 +823,7 @@ export function useGetApiV1CoursesSlug<TData = Awaited<ReturnType<typeof getApiV
 
 
 
-export const getGetApiV1CategoriesUrl = () => {
+export const getListCategoriesUrl = () => {
 
 
 
@@ -829,9 +831,9 @@ export const getGetApiV1CategoriesUrl = () => {
   return `/api/v1/categories`
 }
 
-export const getApiV1Categories = async ( options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+export const listCategories = async ( options?: Parameters<typeof customFetch>[1]): Promise<void> => {
 
-  return customFetch<void>(getGetApiV1CategoriesUrl(),
+  return customFetch<void>(getListCategoriesUrl(),
   {
     ...options,
     method: 'GET'
@@ -844,66 +846,66 @@ export const getApiV1Categories = async ( options?: Parameters<typeof customFetc
 
 
 
-export const getGetApiV1CategoriesQueryKey = () => {
+export const getListCategoriesQueryKey = () => {
     return [
     `/api/v1/categories`
     ] as const;
     }
 
 
-export const getGetApiV1CategoriesQueryOptions = <TData = Awaited<ReturnType<typeof getApiV1Categories>>, TError = ErrorType<unknown>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1Categories>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getListCategoriesQueryOptions = <TData = Awaited<ReturnType<typeof listCategories>>, TError = ErrorType<unknown>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCategories>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getGetApiV1CategoriesQueryKey();
+  const queryKey =  queryOptions?.queryKey ?? getListCategoriesQueryKey();
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiV1Categories>>> = ({ signal }) => getApiV1Categories({ signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listCategories>>> = ({ signal }) => listCategories({ signal, ...requestOptions });
 
 
 
 
 
-   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiV1Categories>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listCategories>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
 }
 
-export type GetApiV1CategoriesQueryResult = NonNullable<Awaited<ReturnType<typeof getApiV1Categories>>>
-export type GetApiV1CategoriesQueryError = ErrorType<unknown>
+export type ListCategoriesQueryResult = NonNullable<Awaited<ReturnType<typeof listCategories>>>
+export type ListCategoriesQueryError = ErrorType<unknown>
 
 
-export function useGetApiV1Categories<TData = Awaited<ReturnType<typeof getApiV1Categories>>, TError = ErrorType<unknown>>(
-  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1Categories>>, TError, TData>> & Pick<
+export function useListCategories<TData = Awaited<ReturnType<typeof listCategories>>, TError = ErrorType<unknown>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCategories>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1Categories>>,
+          Awaited<ReturnType<typeof listCategories>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1Categories>>
+          Awaited<ReturnType<typeof listCategories>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1Categories<TData = Awaited<ReturnType<typeof getApiV1Categories>>, TError = ErrorType<unknown>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1Categories>>, TError, TData>> & Pick<
+export function useListCategories<TData = Awaited<ReturnType<typeof listCategories>>, TError = ErrorType<unknown>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCategories>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
-          Awaited<ReturnType<typeof getApiV1Categories>>,
+          Awaited<ReturnType<typeof listCategories>>,
           TError,
-          Awaited<ReturnType<typeof getApiV1Categories>>
+          Awaited<ReturnType<typeof listCategories>>
         > , 'initialData'
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useGetApiV1Categories<TData = Awaited<ReturnType<typeof getApiV1Categories>>, TError = ErrorType<unknown>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1Categories>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useListCategories<TData = Awaited<ReturnType<typeof listCategories>>, TError = ErrorType<unknown>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCategories>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 
-export function useGetApiV1Categories<TData = Awaited<ReturnType<typeof getApiV1Categories>>, TError = ErrorType<unknown>>(
-  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiV1Categories>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export function useListCategories<TData = Awaited<ReturnType<typeof listCategories>>, TError = ErrorType<unknown>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCategories>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
-  const queryOptions = getGetApiV1CategoriesQueryOptions(options)
+  const queryOptions = getListCategoriesQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 
@@ -916,7 +918,7 @@ export function useGetApiV1Categories<TData = Awaited<ReturnType<typeof getApiV1
 
 
 
-export const getPostApiV1InstructorCoursesUrl = () => {
+export const getCreateCourseUrl = () => {
 
 
 
@@ -924,7 +926,7 @@ export const getPostApiV1InstructorCoursesUrl = () => {
   return `/api/v1/instructor/courses`
 }
 
-export const postApiV1InstructorCourses = async (createCourseRequest: CreateCourseRequest, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+export const createCourse = async (createCourseRequest: CreateCourseRequest, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
 
     const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
     if (!h) return {};
@@ -940,7 +942,7 @@ export const postApiV1InstructorCourses = async (createCourseRequest: CreateCour
     }
     return headers;
   };
-return customFetch<void>(getPostApiV1InstructorCoursesUrl(),
+return customFetch<void>(getCreateCourseUrl(),
   {
     ...options,
     method: 'POST',
@@ -953,13 +955,13 @@ return customFetch<void>(getPostApiV1InstructorCoursesUrl(),
 
 
 
-export const getPostApiV1InstructorCoursesMutationKey = () => ['postApiV1InstructorCourses'] as const;
+export const getCreateCourseMutationKey = () => ['createCourse'] as const;
 
-export const getPostApiV1InstructorCoursesMutationOptions = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1InstructorCourses>>, TError,PostApiV1InstructorCoursesMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiV1InstructorCourses>>, TError,PostApiV1InstructorCoursesMutationVariables, TContext> => {
+export const getCreateCourseMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCourse>>, TError,CreateCourseMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createCourse>>, TError,CreateCourseMutationVariables, TContext> => {
 
-const mutationKey = getPostApiV1InstructorCoursesMutationKey();
+const mutationKey = getCreateCourseMutationKey();
 const {mutation: mutationOptions, request: requestOptions} = options ?
       options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
       options
@@ -969,10 +971,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiV1InstructorCourses>>, PostApiV1InstructorCoursesMutationVariables> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createCourse>>, CreateCourseMutationVariables> = (props) => {
           const {data} = props ?? {};
 
-          return  postApiV1InstructorCourses(data,requestOptions)
+          return  createCourse(data,requestOptions)
         }
 
 
@@ -982,20 +984,20 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
   return  { mutationFn, ...mutationOptions }}
 
-    export type PostApiV1InstructorCoursesMutationResult = NonNullable<Awaited<ReturnType<typeof postApiV1InstructorCourses>>>
-    export type PostApiV1InstructorCoursesMutationBody = BodyType<CreateCourseRequest>
-    export type PostApiV1InstructorCoursesMutationError = ErrorType<unknown>
-    export type PostApiV1InstructorCoursesMutationVariables = {data: BodyType<CreateCourseRequest>}
+    export type CreateCourseMutationResult = NonNullable<Awaited<ReturnType<typeof createCourse>>>
+    export type CreateCourseMutationBody = BodyType<CreateCourseRequest>
+    export type CreateCourseMutationError = ErrorType<unknown>
+    export type CreateCourseMutationVariables = {data: BodyType<CreateCourseRequest>}
 
-    export const usePostApiV1InstructorCourses = <TError = ErrorType<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiV1InstructorCourses>>, TError,PostApiV1InstructorCoursesMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+    export const useCreateCourse = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCourse>>, TError,CreateCourseMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiV1InstructorCourses>>,
+        Awaited<ReturnType<typeof createCourse>>,
         TError,
-        PostApiV1InstructorCoursesMutationVariables,
+        CreateCourseMutationVariables,
         TContext
       > => {
-      return useMutation(getPostApiV1InstructorCoursesMutationOptions(options), queryClient);
+      return useMutation(getCreateCourseMutationOptions(options), queryClient);
     }
 
 export const getPostApiV1CheckoutUrl = () => {

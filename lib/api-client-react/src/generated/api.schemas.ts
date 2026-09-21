@@ -30,6 +30,76 @@ export interface CheckoutRequest {
   returnUrl: string | null;
 }
 
+export interface LessonOutline {
+  id: string;
+  title: string;
+  type: string;
+  durationSec: number;
+  isPreview: boolean;
+  position: number;
+}
+
+export interface SectionOutline {
+  id: string;
+  title: string;
+  position: number;
+  lessons: LessonOutline[];
+}
+
+export interface CourseDetail {
+  id: string;
+  slug: string;
+  type: string;
+  title: string;
+  /** @nullable */
+  subtitle: string | null;
+  /** @nullable */
+  description: string | null;
+  language: string;
+  level: string;
+  price: number;
+  currency: string;
+  /** @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$ */
+  ratingAvg: number | string;
+  ratingCount: number;
+  enrollmentCount: number;
+  /** @nullable */
+  thumbnailKey: string | null;
+  status: string;
+  /** @nullable */
+  publishedAt: string | null;
+  instructorName: string;
+  tags: string[];
+  curriculum: SectionOutline[];
+}
+
+export interface CourseSummary {
+  id: string;
+  slug: string;
+  title: string;
+  /** @nullable */
+  subtitle: string | null;
+  type: string;
+  language: string;
+  level: string;
+  price: number;
+  currency: string;
+  /** @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?$ */
+  ratingAvg: number | string;
+  ratingCount: number;
+  enrollmentCount: number;
+  /** @nullable */
+  thumbnailKey: string | null;
+  status: string;
+  instructorName: string;
+  tags: string[];
+}
+
+export interface CourseListResponse {
+  items: CourseSummary[];
+  hasMore: boolean;
+}
+
 export interface CreateCourseRequest {
   title: string;
   type: string;
@@ -142,7 +212,7 @@ export interface TokenResponse {
   tokens: TokenPair;
 }
 
-export type GetApiV1CoursesParams = {
+export type ListCoursesParams = {
 q?: string;
 category?: string;
 level?: string;
@@ -154,9 +224,9 @@ maxPrice?: number;
  * @pattern ^-?(?:0|[1-9]\d*)(?:\.\d+)?(?:[eE][+-]?\d+)?$
  */
 minRating?: number | string;
-sort: string;
+sort?: string;
 cursor?: string;
-limit: number;
+limit?: number;
 };
 
 export type PostApiV1CouponsValidateParams = {
